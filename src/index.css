@@ -177,7 +177,31 @@
   .text-fire-gradient {
     background: none !important;
     -webkit-text-fill-color: currentColor !important;
-    color: var(--fire-red) !important;
+    color: #b91c1c !important;
+  }
+
+  .problem-section,
+  .problem-section * {
+    background-image: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    mix-blend-mode: normal !important;
+    contain: none !important;
+  }
+
+  .problem-section {
+    background: #ffffff !important;
+    color: #111827 !important;
+    isolation: isolate;
+  }
+
+  .problem-card {
+    background: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    box-shadow: none !important;
   }
 }
 

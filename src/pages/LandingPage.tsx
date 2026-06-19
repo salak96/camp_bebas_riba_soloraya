@@ -230,7 +230,7 @@ export default function LandingPage() {
       </section>
 
       {/* Masalah Peserta */}
-      <section className="mobile-safe py-20 bg-background">
+      <section className="problem-section mobile-safe py-20 bg-white text-black">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-destructive/10 text-destructive border-destructive/20">Apakah Anda Mengalami Ini?</Badge>
@@ -244,10 +244,10 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {masalahList.map((item, i) => (
-              <Card key={i} className="border-destructive/20 bg-destructive/5 hover:border-destructive/40 transition-colors">
+              <Card key={i} className="problem-card border-red-200 bg-red-50 shadow-none">
                 <CardContent className="p-5 flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                  <p className="text-sm text-foreground leading-relaxed">{item.text}</p>
+                  <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                  <p className="text-sm text-black leading-relaxed">{item.text}</p>
                 </CardContent>
               </Card>
             ))}
