@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
+import { api, type EventData } from "@/lib/api"
 import {
   Flame, MapPin, Calendar, Clock, Users, Phone, Mail, ChevronDown,
   CheckCircle2, AlertTriangle, Star, BookOpen, TrendingUp, Shield,
@@ -10,16 +11,44 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import SiteNavbar from "@/components/SiteNavbar"
 
-const EVENT_DATE = new Date("2026-07-25T08:00:00")
+const defaultEvent: EventData = {
+  id: 1,
+  name: "CAMP BEBAS RIBA INDONESIA",
+  theme: "Lepaskan Beban Hidup dari Jerat Hutang",
+  campNumber: "CAMP#39",
+  region: "Jabodetabek & Karawang",
+  startDate: "2026-07-25T00:00:00.000Z",
+  endDate: "2026-07-26T00:00:00.000Z",
+  startTime: "08.00 WIB",
+  venue: "Asrama Haji Bekasi",
+  address: "Jl. Ir. H. Juanda No.70, Bekasi Timur, Kota Bekasi, Jawa Barat 17113",
+  price: 500000,
+  quota: 150,
+}
 
-function Countdown() {
+function formatDateRange(start: string, end: string) {
+  const s = new Date(start)
+  const e = new Date(end)
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+  if (s.getMonth() === e.getMonth()) {
+    return `${s.getDate()}–${e.getDate()} ${months[s.getMonth()]} ${s.getFullYear()}`
+  }
+  return `${s.getDate()} ${months[s.getMonth()]} – ${e.getDate()} ${months[e.getMonth()]} ${s.getFullYear()}`
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("id-ID").format(amount)
+}
+
+function Countdown({ eventDate }: { eventDate: Date }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     const tick = () => {
       const now = new Date()
-      const diff = EVENT_DATE.getTime() - now.getTime()
+      const diff = eventDate.getTime() - now.getTime()
       if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return }
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -31,7 +60,7 @@ function Countdown() {
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [])
+  }, [eventDate])
 
   const blocks = [
     { label: "Hari", value: timeLeft.days },
@@ -82,6 +111,19 @@ const benefitList = [
 
 export default function LandingPage() {
   const { session, profile } = useAuth()
+  const [event, setEvent] = useState<EventData>(defaultEvent)
+
+  useEffect(() => {
+    async function loadEvent() {
+      try {
+        const data = await api<{ event: EventData }>("/events/active")
+        if (data.event) setEvent(data.event)
+      } catch {
+        // use default
+      }
+    }
+    loadEvent()
+  }, [])
 
   const cta = session
     ? profile?.role === "admin" ? "/admin" : "/dashboard"
@@ -89,36 +131,14 @@ export default function LandingPage() {
 
   const ctaLabel = session ? "Lihat Dashboard Saya" : "Daftar Sekarang"
 
+  const dateRange = formatDateRange(event.startDate, event.endDate)
+  const eventTime = event.startTime || "08.00 WIB – Selesai"
+  const venue = event.venue || "Lokasi TBA"
+  const priceFormatted = formatCurrency(event.price)
+
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Flame className="h-6 w-6 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">CBR Indonesia</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm font-semibold text-foreground">Home</Link>
-            <Link to="/artikel" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Artikel</Link>
-            <Link to="/tentang-kami" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tentang Kami</Link>
-            <Link to="/kontak" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Kontak Kami</Link>
-            <div className="h-4 w-px bg-border mx-1" />
-            {session ? (
-              <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button asChild variant="ghost" size="sm"><Link to="/login">Masuk</Link></Button>
-                <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                  <Link to="/register">Daftar</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <SiteNavbar active="home" />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-fire-gradient-subtle min-h-[90svh] flex items-center">
@@ -134,7 +154,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-20 text-center">
           <Badge className="mb-6 bg-fire-orange/20 text-orange-300 border-fire-orange/40 px-4 py-1.5 text-sm font-semibold">
             <Flame className="h-3.5 w-3.5 mr-1.5" />
-            CAMP#39 Jabodetabek & Karawang
+            {event.campNumber || "CBR"} {event.region || "Indonesia"}
           </Badge>
 
           <div className="mb-2">
@@ -151,7 +171,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-center gap-2 mb-6">
             <div className="h-px w-12 bg-fire-orange/60" />
             <p className="text-orange-300 text-lg sm:text-xl font-semibold italic px-2">
-              "Lepaskan Beban Hidup dari Jerat Hutang"
+              "{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"
             </p>
             <div className="h-px w-12 bg-fire-orange/60" />
           </div>
@@ -162,35 +182,35 @@ export default function LandingPage() {
               <Calendar className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Tanggal</p>
-                <p className="text-sm font-semibold text-white">25–26 Juli 2026</p>
+                <p className="text-sm font-semibold text-white">{dateRange}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left">
               <Clock className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Waktu</p>
-                <p className="text-sm font-semibold text-white">08.00 WIB – Selesai</p>
+                <p className="text-sm font-semibold text-white">{eventTime}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left">
               <MapPin className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Lokasi</p>
-                <p className="text-sm font-semibold text-white">Asrama Haji Bekasi</p>
+                <p className="text-sm font-semibold text-white">{venue}</p>
               </div>
             </div>
           </div>
 
           {/* Price */}
           <div className="mb-8">
-            <span className="text-4xl font-black text-white">Rp 500.000</span>
+            <span className="text-4xl font-black text-white">Rp {priceFormatted}</span>
             <span className="text-gray-400 ml-2 text-sm">/ peserta</span>
           </div>
 
           {/* Countdown */}
           <div className="mb-8">
             <p className="text-gray-400 text-sm mb-3 uppercase tracking-widest">Menghitung mundur</p>
-            <Countdown />
+            <Countdown eventDate={new Date(event.startDate)} />
           </div>
 
           <Button
@@ -201,7 +221,7 @@ export default function LandingPage() {
             <Link to={cta}>{ctaLabel}</Link>
           </Button>
 
-          <div className="mt-4 text-xs text-gray-500">Sabtu–Minggu, 25–26 Juli 2026 • Asrama Haji Bekasi</div>
+          <div className="mt-4 text-xs text-gray-500">{dateRange} • {venue}</div>
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
@@ -279,7 +299,7 @@ export default function LandingPage() {
               Benefit <span className="text-fire-gradient">Peserta</span>
             </h2>
             <p className="text-gray-400 max-w-lg mx-auto">
-              Semua sudah termasuk dalam HTM <strong className="text-white">Rp 500.000</strong>
+              Semua sudah termasuk dalam HTM <strong className="text-white">Rp {priceFormatted}</strong>
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -295,7 +315,7 @@ export default function LandingPage() {
           <div className="mt-12 text-center">
             <div className="inline-block bg-white/5 border border-white/20 rounded-2xl px-8 py-6 max-w-md">
               <p className="text-gray-400 text-sm mb-1">Harga Tiket</p>
-              <p className="text-5xl font-black text-white mb-1">Rp 500.000</p>
+              <p className="text-5xl font-black text-white mb-1">Rp {priceFormatted}</p>
               <p className="text-gray-400 text-sm mb-4">Per peserta — termasuk seluruh benefit di atas</p>
               <Badge variant="outline" className="border-red-400/60 text-red-400 mb-5">
                 Kuota Terbatas!
@@ -319,7 +339,7 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Lokasi Event</Badge>
           <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-6">
-            Asrama Haji Bekasi
+            {venue}
           </h2>
           <Card className="border-border/60">
             <CardContent className="p-8">
@@ -328,22 +348,24 @@ export default function LandingPage() {
                   <MapPin className="h-8 w-8 text-primary" />
                 </div>
               </div>
-              <p className="text-muted-foreground mb-1">Jl. Ir. H. Juanda No.70</p>
-              <p className="text-muted-foreground mb-1">Bekasi Timur, Kota Bekasi</p>
-              <p className="text-muted-foreground mb-4">Jawa Barat 17113</p>
+              {event.address?.split(",").map((line, i) => (
+                <p key={i} className="text-muted-foreground mb-1">{line.trim()}</p>
+              ))}
               <Separator className="mb-4" />
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                 <div className="text-center">
                   <p className="text-muted-foreground">Tanggal</p>
-                  <p className="font-semibold text-foreground">25–26 Juli 2026</p>
+                  <p className="font-semibold text-foreground">{dateRange}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-muted-foreground">Mulai</p>
-                  <p className="font-semibold text-foreground">08.00 WIB</p>
+                  <p className="font-semibold text-foreground">{eventTime}</p>
                 </div>
                 <div className="text-center sm:col-span-1 col-span-2">
                   <p className="text-muted-foreground">Format</p>
-                  <p className="font-semibold text-foreground">Sabtu – Minggu</p>
+                  <p className="font-semibold text-foreground">
+                    {new Date(event.startDate).toLocaleDateString("id-ID", { weekday: "long" })} – {new Date(event.endDate).toLocaleDateString("id-ID", { weekday: "long" })}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -372,7 +394,7 @@ export default function LandingPage() {
                   size="sm"
                   className="mt-3 border-green-500/50 text-green-600 hover:bg-green-500/10"
                 >
-                  <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/6281393122822" target="_blank" rel="noopener noreferrer">
                     Chat WhatsApp
                   </a>
                 </Button>
@@ -417,22 +439,10 @@ export default function LandingPage() {
           >
             <Link to={cta}>{ctaLabel}</Link>
           </Button>
-          <p className="text-gray-500 text-sm mt-4">Sabtu–Minggu, 25–26 Juli 2026 • Asrama Haji Bekasi</p>
+          <p className="text-gray-500 text-sm mt-4">{dateRange} • {venue}</p>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-border bg-background">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Flame className="h-5 w-5 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">Camp Bebas Riba Indonesia</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            © 2026 Camp Bebas Riba Indonesia. Semua hak dilindungi.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

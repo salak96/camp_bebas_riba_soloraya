@@ -5,12 +5,41 @@ import {
   Flame, LogOut, User, Calendar, MapPin, Clock, Upload,
   MessageCircle, CheckCircle2, AlertCircle, Clock3, FileText, ExternalLink
 } from "lucide-react"
-import { supabase, EVENT_ID, type Registration } from "@/lib/supabase"
+import { api, toRegistration, type Registration, type EventData } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+
+const defaultEvent: EventData = {
+  id: 1,
+  name: "CAMP BEBAS RIBA INDONESIA",
+  theme: "Lepaskan Beban Hidup dari Jerat Hutang",
+  campNumber: "CAMP#39",
+  region: "Jabodetabek & Karawang",
+  startDate: "2026-07-25T00:00:00.000Z",
+  endDate: "2026-07-26T00:00:00.000Z",
+  startTime: "08.00 WIB",
+  venue: "Asrama Haji Bekasi",
+  address: "Jl. Ir. H. Juanda No.70, Bekasi Timur, Kota Bekasi, Jawa Barat 17113",
+  price: 500000,
+  quota: 150,
+}
+
+function formatDateRange(start: string, end: string) {
+  const s = new Date(start)
+  const e = new Date(end)
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+  if (s.getMonth() === e.getMonth()) {
+    return `${s.getDate()}–${e.getDate()} ${months[s.getMonth()]} ${s.getFullYear()}`
+  }
+  return `${s.getDate()} ${months[s.getMonth()]} – ${e.getDate()} ${months[e.getMonth()]} ${s.getFullYear()}`
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("id-ID").format(amount)
+}
 
 const PAYMENT_STATUS_CONFIG = {
   belum_bayar: { label: "Belum Bayar", color: "bg-destructive/10 text-destructive border-destructive/20", icon: AlertCircle },
@@ -23,20 +52,32 @@ export default function DashboardPage() {
   const [registration, setRegistration] = useState<Registration | null>(null)
   const [loadingReg, setLoadingReg] = useState(true)
   const [uploadingProof, setUploadingProof] = useState(false)
+  const [event, setEvent] = useState<EventData>(defaultEvent)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    async function loadEvent() {
+      try {
+        const data = await api<{ event: EventData }>("/events/active")
+        if (data.event) setEvent(data.event)
+      } catch {
+        // use default
+      }
+    }
+    loadEvent()
+  }, [])
 
   useEffect(() => {
     if (!user) return
     async function loadRegistration() {
-      const { data, error } = await supabase
-        .from("registrations")
-        .select("*")
-        .eq("user_id", user!.id)
-        .eq("event_id", EVENT_ID)
-        .maybeSingle()
-      if (error) toast.error("Gagal memuat data pendaftaran")
-      setRegistration(data)
-      setLoadingReg(false)
+      try {
+        const data = await api<{ registration: any | null }>("/my/registration")
+        setRegistration(toRegistration(data.registration))
+      } catch {
+        toast.error("Gagal memuat data pendaftaran")
+      } finally {
+        setLoadingReg(false)
+      }
     }
     loadRegistration()
   }, [user])
@@ -56,41 +97,24 @@ export default function DashboardPage() {
     }
 
     setUploadingProof(true)
-    const fileName = `${user!.id}/${registration.id}_${Date.now()}.${file.name.split(".").pop()}`
-
-    const { error: uploadError } = await supabase.storage
-      .from("payment-proofs")
-      .upload(fileName, file, { upsert: true })
-
-    if (uploadError) {
-      toast.error("Gagal upload bukti pembayaran: " + uploadError.message)
-      setUploadingProof(false)
-      return
-    }
-
-    const { error: updateError } = await supabase
-      .from("registrations")
-      .update({
-        payment_proof_url: fileName,
-        payment_status: "menunggu_konfirmasi",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", registration.id)
-
-    if (updateError) {
-      toast.error("Gagal update status: " + updateError.message)
-    } else {
+    try {
+      const formData = new FormData()
+      formData.append("proof", file)
+      const data = await api<{ registration: any }>("/my/registration/proof", { method: "POST", body: formData })
       toast.success("Bukti pembayaran berhasil diupload! Status: Menunggu Konfirmasi.")
-      setRegistration(prev => prev ? { ...prev, payment_proof_url: fileName, payment_status: "menunggu_konfirmasi" } : prev)
+      setRegistration(toRegistration(data.registration))
+    } catch (error) {
+      toast.error("Gagal upload bukti pembayaran: " + (error instanceof Error ? error.message : "Terjadi kesalahan"))
+    } finally {
+      setUploadingProof(false)
+      if (fileRef.current) fileRef.current.value = ""
     }
-    setUploadingProof(false)
-    if (fileRef.current) fileRef.current.value = ""
   }
 
   function buildWaMessage() {
     if (!registration) return ""
-    const msg = `Halo Admin CBR, saya ingin konfirmasi pendaftaran CAMP#39.%0ANama: ${registration.full_name}%0ANo WA: ${registration.whatsapp}%0AKota: ${registration.city}%0AStatus pembayaran: ${PAYMENT_STATUS_CONFIG[registration.payment_status].label}`
-    return `https://wa.me/6281234567890?text=${msg}`
+    const msg = `Halo Admin CBR, saya ingin konfirmasi pendaftaran ${event.campNumber || "CBR"}.%0ANama: ${registration.full_name}%0ANo WA: ${registration.whatsapp}%0AKota: ${registration.city}%0AStatus pembayaran: ${PAYMENT_STATUS_CONFIG[registration.payment_status].label}`
+    return `https://wa.me/6281393122822?text=${msg}`
   }
 
   async function handleSignOut() {
@@ -105,7 +129,7 @@ export default function DashboardPage() {
       <header className="border-b border-border bg-background sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <Flame className="h-6 w-6 text-fire-orange" />
+            <img src="/logo.png" alt="CBR Indonesia" className="h-8 w-8 object-contain" />
             <span className="font-black text-sm uppercase tracking-wider hidden sm:inline">CBR Indonesia</span>
           </Link>
           <div className="flex items-center gap-2">
@@ -181,7 +205,7 @@ export default function DashboardPage() {
               </div>
               <h2 className="text-xl font-bold text-foreground mb-2">Belum Terdaftar</h2>
               <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                Anda belum mendaftar untuk CAMP#39. Daftar sekarang sebelum kuota habis!
+                Anda belum mendaftar untuk {event.campNumber || "event ini"}. Daftar sekarang sebelum kuota habis!
               </p>
               <Button asChild className="bg-fire-red hover:bg-fire-orange text-white border-0 font-bold">
                 <Link to="/daftar">Daftar Sekarang</Link>
@@ -213,7 +237,7 @@ export default function DashboardPage() {
                       <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">Bank</span><span className="font-semibold">BSI / BCA / Mandiri</span></div>
                       <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">No. Rek</span><span className="font-semibold">1234 5678 9012</span></div>
                       <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">A/N</span><span className="font-semibold">Yayasan Camp Bebas Riba</span></div>
-                      <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">Jumlah</span><span className="font-bold text-foreground">Rp 500.000</span></div>
+                      <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">Jumlah</span><span className="font-bold text-foreground">Rp {formatCurrency(event.price)}</span></div>
                     </div>
                   </div>
                 )}
@@ -224,7 +248,7 @@ export default function DashboardPage() {
                 )}
                 {registration.payment_status === "lunas" && (
                   <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-4 mb-4">
-                    <p className="text-sm text-green-600 font-medium">Pembayaran Anda telah dikonfirmasi. Selamat! Anda resmi terdaftar sebagai peserta CAMP#39.</p>
+                    <p className="text-sm text-green-600 font-medium">Pembayaran Anda telah dikonfirmasi. Selamat! Anda resmi terdaftar sebagai peserta {event.campNumber || "event ini"}.</p>
                   </div>
                 )}
 
@@ -317,24 +341,25 @@ export default function DashboardPage() {
                   <div className="flex items-start gap-3">
                     <Flame className="h-5 w-5 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-white">CAMP BEBAS RIBA INDONESIA</p>
-                      <p className="text-sm text-gray-400 italic">"Lepaskan Beban Hidup dari Jerat Hutang"</p>
+                      <p className="font-bold text-white">{event.name}</p>
+                      <p className="text-sm text-gray-400 italic">"{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-300">
                     <Calendar className="h-4 w-4 text-fire-orange shrink-0" />
-                    <span>Sabtu–Minggu, 25–26 Juli 2026</span>
+                    <span>{formatDateRange(event.startDate, event.endDate)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-300">
                     <Clock className="h-4 w-4 text-fire-orange shrink-0" />
-                    <span>08.00 WIB – Selesai</span>
+                    <span>{event.startTime || "08.00 WIB – Selesai"}</span>
                   </div>
                   <div className="flex items-start gap-3 text-sm text-gray-300">
                     <MapPin className="h-4 w-4 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-white">Asrama Haji Bekasi</p>
-                      <p>Jl. Ir. H. Juanda No.70, Bekasi Timur</p>
-                      <p>Kota Bekasi, Jawa Barat 17113</p>
+                      <p className="font-medium text-white">{event.venue || "Lokasi TBA"}</p>
+                      {event.address?.split(",").map((line, i) => (
+                        <p key={i}>{line.trim()}</p>
+                      ))}
                     </div>
                   </div>
                 </div>

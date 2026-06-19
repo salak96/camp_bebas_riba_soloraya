@@ -1,46 +1,17 @@
 import { Link } from "react-router-dom"
-import { useAuth } from "@/contexts/AuthContext"
 import {
-  Flame, Phone, Mail, MapPin, Clock, ArrowRight, Send, MessageCircle
+  Mail, MapPin, ArrowRight, Send, MessageCircle, ExternalLink
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import SiteNavbar from "@/components/SiteNavbar"
 
 export default function KontakPage() {
-  const { session, profile } = useAuth()
-
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Flame className="h-6 w-6 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">CBR Indonesia</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
-            <Link to="/artikel" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Artikel</Link>
-            <Link to="/tentang-kami" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tentang Kami</Link>
-            <Link to="/kontak" className="text-sm font-semibold text-foreground">Kontak Kami</Link>
-            <div className="h-4 w-px bg-border mx-1" />
-            {session ? (
-              <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button asChild variant="ghost" size="sm"><Link to="/login">Masuk</Link></Button>
-                <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                  <Link to="/register">Daftar</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <SiteNavbar />
 
       {/* Hero */}
       <section className="relative bg-fire-gradient-subtle py-20">
@@ -73,7 +44,7 @@ export default function KontakPage() {
                   variant="outline"
                   className="border-green-500/50 text-green-600 hover:bg-green-500/10"
                 >
-                  <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/628111013677" target="_blank" rel="noopener noreferrer">
                     <Send className="mr-2 h-4 w-4" />
                     Chat WhatsApp
                   </a>
@@ -112,11 +83,37 @@ export default function KontakPage() {
                     <h3 className="font-bold text-foreground mb-1">Alamat</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       Camp Bebas Riba Indonesia<br />
-                      Jl. Ir. H. Juanda No.70<br />
-                      Bekasi Timur, Kota Bekasi<br />
-                      Jawa Barat 17113
+                      Jl. Prof. M Yamin VII No.08, RT.006/RW.004<br />
+                      Karangpucung, Kec. Purwokerto Selatan<br />
+                      Kabupaten Banyumas, Jawa Tengah 53144
                     </p>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-6 max-w-xl mx-auto">
+            <Card className="border-border/60">
+              <CardContent className="p-6 text-center">
+                <h3 className="font-bold text-foreground mb-2">Sosial Media</h3>
+                <p className="text-sm text-muted-foreground mb-5">Ikuti update kegiatan Camp Bebas Riba Indonesia</p>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <Button asChild variant="outline" className="border-primary/50 text-primary hover:bg-primary/10">
+                    <a href="https://www.facebook.com/groups/495111958710478/" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" /> Facebook
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="border-primary/50 text-primary hover:bg-primary/10">
+                    <a href="https://www.tiktok.com/@camp.bebas.riba/" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" /> TikTok
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="border-primary/50 text-primary hover:bg-primary/10">
+                    <a href="https://www.youtube.com/@campbebasribasoloraya/videos" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" /> YouTube
+                    </a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -139,18 +136,6 @@ export default function KontakPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-border bg-background">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Flame className="h-5 w-5 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">Camp Bebas Riba Indonesia</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            © 2026 Camp Bebas Riba Indonesia. Semua hak dilindungi.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

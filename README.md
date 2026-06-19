@@ -1,63 +1,136 @@
-# Camp Bebas Riba Indonesia - Website
+# Camp Bebas Riba Indonesia
 
-Website organisasi masyarakat yang didedikasikan untuk membantu masyarakat keluar dari jeratan utang dan riba serta membangun kehidupan finansial yang sehat sesuai prinsip syariah.
+Website + backend admin panel sederhana untuk pendaftaran CAMP CBR, artikel, pembayaran, export CSV, dan dashboard peserta.
 
-## 🚀 Teknologi yang Digunakan
+## Stack
 
-- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Backend/Database**: [Supabase](https://supabase.com/)
-- **Routing**: [React Router DOM v7](https://reactrouter.com/)
-- **UI Components**: Shadcn UI / Radix UI
-- **Icons**: Lucide React
+- Frontend: React + Vite + TypeScript + Tailwind CSS
+- Backend: Express + TypeScript
+- Database: MySQL
+- ORM/Migration: Prisma
+- Upload: Multer, file lokal `server/uploads/`
 
-## 🛠️ Panduan Instalasi
+## Prasyarat
 
-### 1. Prasyarat
-Pastikan Anda sudah menginstal:
-- [Node.js](https://nodejs.org/) (versi terbaru LTS direkomendasikan)
-- [npm](https://www.npmjs.com/)
+- Node.js LTS
+- npm
+- MySQL aktif
 
-### 2. Kloning Repositori
-```bash
-git clone <repository-url>
-cd campbebasriba
-```
+## Instalasi
 
-### 3. Instalasi Dependensi
 ```bash
 npm install
 ```
 
-### 4. Konfigurasi Environment
-Buat file `.env` di root direktori dan tambahkan kredensial Supabase Anda:
+Copy env:
 
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```bash
+cp .env.example .env
 ```
 
-### 5. Menjalankan Project
-Untuk menjalankan mode development:
+Isi `.env`:
+
+```env
+DATABASE_URL="mysql://root:password@localhost:3306/campbebasriba"
+JWT_SECRET="ganti_dengan_secret_panjang"
+PORT=4000
+VITE_API_URL="http://localhost:4000/api"
+```
+
+Buat database MySQL:
+
+```sql
+CREATE DATABASE campbebasriba CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Generate Prisma Client:
+
+```bash
+npm run prisma:generate
+```
+
+Jalankan migration:
+
+```bash
+npm run prisma:migrate
+```
+
+Jalankan backend API:
+
+```bash
+npm run dev:api
+```
+
+Jalankan frontend:
+
 ```bash
 npm run dev
 ```
-Akses website di: `http://localhost:5173`
 
-## 📦 Perintah Lainnya
+Frontend: `http://localhost:5173`  
+API: `http://localhost:4000/api`
 
-- **Type Check**: `npm run typecheck` (untuk memverifikasi tipe data TypeScript)
-- **Build**: `npm run build` (untuk memproduksi build versi produksi)
-- **Preview**: `npm run preview` (untuk melihat hasil build produksi secara lokal)
+## Script
 
-## 📁 Struktur Folder Utama
+```bash
+npm run dev              # frontend
+npm run dev:api          # backend API
+npm run build            # build frontend
+npm run typecheck        # typecheck frontend
+npm run prisma:generate  # generate Prisma client
+npm run prisma:migrate   # jalankan migration MySQL
+npm run prisma:studio    # buka Prisma Studio
+```
 
-- `src/pages/`: Berisi halaman utama aplikasi (Landing, Dashboard, Login, Register, dll)
-- `src/components/`: Komponen UI yang dapat digunakan kembali
-- `src/contexts/`: State management global (AuthContext)
-- `src/lib/`: Konfigurasi library eksternal (Supabase client, utils)
-- `supabase/`: Migrasi database dan fungsi server-side (Edge Functions)
+## Database
 
-## 📝 Catatan Penting
-Pastikan tabel `registrations` dan `profiles` sudah terkonfigurasi di database Supabase sesuai dengan migrasi yang ada di folder `supabase/migrations/`.
+Migration ada di:
+
+```text
+prisma/schema.prisma
+prisma/migrations/20260619000000_init_mysql/migration.sql
+```
+
+Tabel:
+
+- `users`
+- `events`
+- `registrations`
+- `articles`
+
+Status pembayaran disimpan di `registrations.payment_status` dan bukti bayar di `registrations.proof_file`.
+
+## API Admin
+
+Admin harus login memakai akun dengan `role = admin`.
+
+Endpoint utama:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `GET /api/admin/stats`
+- `GET /api/admin/registrations?q=&status=`
+- `PATCH /api/admin/registrations/:id/status`
+- `GET /api/admin/registrations/export.csv`
+- `POST /api/admin/articles`
+- `PUT /api/admin/articles/:id`
+- `DELETE /api/admin/articles/:id`
+
+## Validasi Backend
+
+- Email user unik
+- WhatsApp wajib saat daftar peserta
+- Upload bukti bayar hanya JPG, PNG, PDF
+- Maksimal file 2MB
+- Satu user hanya bisa daftar satu kali per event (`unique userId + eventId`)
+
+## Membuat Admin
+
+Cara cepat via Prisma Studio:
+
+```bash
+npm run prisma:studio
+```
+
+Buat user biasa lewat register, lalu ubah kolom `role` menjadi `admin` di tabel `users`.

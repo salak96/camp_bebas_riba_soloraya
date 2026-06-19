@@ -1,0 +1,1 @@
+ALTER TABLE `articles` ADD COLUMN `images` TEXT NULL, ADD COLUMN `tiktok_url` VARCHAR(500) NULL;

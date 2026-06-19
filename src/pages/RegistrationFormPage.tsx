@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Flame, ArrowLeft, Send } from "lucide-react"
-import { supabase, EVENT_ID } from "@/lib/supabase"
+import { ArrowLeft, Send } from "lucide-react"
+import { api, type EventData } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+const defaultEvent: EventData = {
+  id: 1,
+  name: "CAMP BEBAS RIBA INDONESIA",
+  theme: "Lepaskan Beban Hidup dari Jerat Hutang",
+  campNumber: "CAMP#39",
+  region: "Jabodetabek & Karawang",
+  startDate: "2026-07-25T00:00:00.000Z",
+  endDate: "2026-07-26T00:00:00.000Z",
+  startTime: "08.00 WIB",
+  venue: "Asrama Haji Bekasi",
+  address: "Jl. Ir. H. Juanda No.70, Bekasi Timur, Kota Bekasi, Jawa Barat 17113",
+  price: 500000,
+  quota: 150,
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("id-ID").format(amount)
+}
 
 const schema = z.object({
   full_name: z.string().min(3, "Nama minimal 3 karakter"),
@@ -36,6 +55,19 @@ export default function RegistrationFormPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [checkingReg, setCheckingReg] = useState(true)
+  const [event, setEvent] = useState<EventData>(defaultEvent)
+
+  useEffect(() => {
+    async function loadEvent() {
+      try {
+        const data = await api<{ event: EventData }>("/events/active")
+        if (data.event) setEvent(data.event)
+      } catch {
+        // use default
+      }
+    }
+    loadEvent()
+  }, [])
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -50,13 +82,8 @@ export default function RegistrationFormPage() {
   useEffect(() => {
     if (!user) return
     async function checkExisting() {
-      const { data } = await supabase
-        .from("registrations")
-        .select("id")
-        .eq("user_id", user!.id)
-        .eq("event_id", EVENT_ID)
-        .maybeSingle()
-      if (data) {
+      const data = await api<{ registration: unknown | null }>("/my/registration")
+      if (data.registration) {
         toast.info("Anda sudah terdaftar untuk event ini.")
         navigate("/dashboard")
       }
@@ -70,37 +97,27 @@ export default function RegistrationFormPage() {
     setLoading(true)
 
     const payload = {
-      user_id: user.id,
-      event_id: EVENT_ID,
-      full_name: values.full_name,
+      fullName: values.full_name,
       email: values.email,
       whatsapp: values.whatsapp,
       gender: values.gender,
       age: parseInt(values.age, 10) || 0,
       city: values.city,
-      shirt_size: values.gender === "ikhwan" ? (values.shirt_size || null) : null,
-      hijab_size: values.gender === "akhwat" ? (values.hijab_size || null) : null,
-      full_address: values.full_address,
+      shirtSize: values.gender === "ikhwan" ? (values.shirt_size || null) : null,
+      hijabSize: values.gender === "akhwat" ? (values.hijab_size || null) : null,
+      fullAddress: values.full_address,
       notes: values.notes || null,
-      payment_status: "belum_bayar",
-      registration_number: "",
     }
 
-    const { error } = await supabase.from("registrations").insert(payload)
-    setLoading(false)
-
-    if (error) {
-      if (error.code === "23505") {
-        toast.error("Anda sudah mendaftar untuk event ini.")
-        navigate("/dashboard")
-        return
-      }
-      toast.error("Gagal mendaftar: " + error.message)
-      return
+    try {
+      await api("/registrations", { method: "POST", body: JSON.stringify(payload) })
+      toast.success("Pendaftaran berhasil! Silakan lakukan pembayaran.")
+      navigate("/dashboard")
+    } catch (error) {
+      toast.error("Gagal mendaftar: " + (error instanceof Error ? error.message : "Terjadi kesalahan"))
+    } finally {
+      setLoading(false)
     }
-
-    toast.success("Pendaftaran berhasil! Silakan lakukan pembayaran.")
-    navigate("/dashboard")
   }
 
   if (checkingReg) {
@@ -121,7 +138,7 @@ export default function RegistrationFormPage() {
             Kembali
           </Link>
           <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 text-fire-orange" />
+            <img src="/logo.png" alt="CBR Indonesia" className="h-8 w-8 object-contain" />
             <span className="font-black text-sm">CBR CAMP#39</span>
           </div>
         </div>
@@ -132,7 +149,7 @@ export default function RegistrationFormPage() {
           <Badge className="mb-3 bg-fire-orange/20 text-orange-500 border-fire-orange/40">
             Formulir Pendaftaran
           </Badge>
-          <h1 className="text-3xl font-black text-foreground mb-2">Daftar CAMP#39</h1>
+          <h1 className="text-3xl font-black text-foreground mb-2">Daftar {event.campNumber || "Event"}</h1>
           <p className="text-muted-foreground">Isi formulir berikut dengan data yang benar dan lengkap</p>
         </div>
 
@@ -261,7 +278,7 @@ export default function RegistrationFormPage() {
               <div className="bg-muted/50 rounded-xl p-4 border border-border/60">
                 <p className="text-sm font-semibold text-foreground mb-1">Informasi Pembayaran</p>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Setelah mendaftar, lakukan pembayaran sebesar <strong className="text-foreground">Rp 500.000</strong> ke:
+                  Setelah mendaftar, lakukan pembayaran sebesar <strong className="text-foreground">Rp {formatCurrency(event.price)}</strong> ke:
                 </p>
                 <div className="text-sm space-y-1">
                   <div className="flex gap-2"><span className="text-muted-foreground w-20 shrink-0">Bank</span><span className="font-semibold">: BSI / BCA / Mandiri</span></div>

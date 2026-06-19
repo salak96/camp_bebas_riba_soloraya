@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  peserta
+  admin
+}
+
+enum Gender {
+  ikhwan
+  akhwat
+}
+
+enum PaymentStatus {
+  belum_bayar
+  menunggu_konfirmasi
+  lunas
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  passwordHash        String    @map("password_hash")
+  fullName            String?   @map("full_name")
+  googleId            String?   @unique @map("google_id")
+  resetTokenHash      String?   @map("reset_token_hash")
+  resetTokenExpiresAt DateTime? @map("reset_token_expires_at")
+  role                UserRole  @default(peserta)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  registrations Registration[]
+  articles      Article[]
+
+  @@map("users")
+}
+
+model Event {
+  id            Int            @id @default(autoincrement())
+  name          String
+  theme         String?
+  campNumber    String?        @map("camp_number")
+  region        String?        @db.VarChar(255)
+  startDate     DateTime       @map("start_date")
+  endDate       DateTime       @map("end_date")
+  startTime     String?        @map("start_time")
+  venue         String?
+  address       String?        @db.Text
+  price         Int            @default(0)
+  quota         Int            @default(150)
+  isActive      Boolean        @default(true) @map("is_active")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  registrations Registration[]
+
+  @@map("events")
+}
+
+model Registration {
+  id                 Int           @id @default(autoincrement())
+  registrationNumber String        @unique @map("registration_number")
+  userId             Int           @map("user_id")
+  eventId            Int           @map("event_id")
+  fullName           String        @map("full_name")
+  email              String
+  whatsapp           String
+  gender             Gender
+  age                Int
+  city               String
+  shirtSize          String?       @map("shirt_size")
+  hijabSize          String?       @map("hijab_size")
+  fullAddress        String        @db.Text @map("full_address")
+  notes              String?       @db.Text
+  paymentStatus      PaymentStatus @default(belum_bayar) @map("payment_status")
+  proofFile          String?       @map("proof_file")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event              Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([email])
+  @@index([whatsapp])
+  @@index([city])
+  @@index([paymentStatus])
+  @@map("registrations")
+}
+
+model Donation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Int
+  method    String   @default("transfer")
+  round     Int      @default(3)
+  isPaid    Boolean  @default(true) @map("is_paid")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("donations")
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  excerpt     String?  @db.Text
+  content     String   @db.LongText
+  imageUrl    String?  @map("image_url")
+  images      String?  @db.Text
+  tiktokUrl   String?  @map("tiktok_url")
+  isPublished Boolean  @default(false) @map("is_published")
+  authorId    Int?     @map("author_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@map("articles")
+}

@@ -1,12 +1,27 @@
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { useAuth } from "@/contexts/AuthContext"
+import SiteNavbar from "@/components/SiteNavbar"
+import { api } from "@/lib/api"
 import {
-  Flame, ArrowRight, BookOpen, Users, Calendar, MapPin, ChevronRight
+  Flame, ArrowRight, BookOpen, Users, Calendar, MapPin, ChevronRight, Play
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+
+type Article = {
+  id: number
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  imageUrl: string | null
+  images: string | null
+  tiktokUrl: string | null
+  isPublished: boolean
+  createdAt: string
+}
 
 const programList = [
   {
@@ -40,38 +55,23 @@ const programList = [
 ]
 
 export default function ArtikelPage() {
-  const { session, profile } = useAuth()
+  const [articles, setArticles] = useState<Article[]>([])
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const articleData = await api<{ articles: Article[] }>("/articles")
+        setArticles(articleData.articles)
+      } catch {
+        // ignore
+      }
+    }
+    load()
+  }, [])
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Flame className="h-6 w-6 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">CBR Indonesia</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
-            <Link to="/artikel" className="text-sm font-semibold text-foreground">Artikel</Link>
-            <Link to="/tentang-kami" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tentang Kami</Link>
-            <Link to="/kontak" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Kontak Kami</Link>
-            <div className="h-4 w-px bg-border mx-1" />
-            {session ? (
-              <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button asChild variant="ghost" size="sm"><Link to="/login">Masuk</Link></Button>
-                <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-                  <Link to="/register">Daftar</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <SiteNavbar active="artikel" />
 
       {/* Hero */}
       <section className="relative bg-fire-gradient-subtle py-20">
@@ -82,12 +82,55 @@ export default function ArtikelPage() {
             <span className="text-fire-gradient">Jeratan Utang dan Riba!</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-            CBR Indonesia merupakan organisasi Masyarakat yang berdedikasi untuk membantu masyarakat keluar dari jeratan utang riba dan membangun kehidupan finansial yang sehat, bebas dari praktik yang tidak sesuai dengan prinsip syariah.
+            CBR Indonesia merupakan organisasi Masyarakat yang berdedikasi untuk membantu masyarakat keluar dari jeratan utang riba dan membangun kehidupan finansial yang sehat.
           </p>
         </div>
       </section>
 
       <Separator />
+
+      {/* Artikel dari Admin */}
+      {articles.length > 0 && (
+        <section className="py-20">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Artikel Terbaru</Badge>
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-4">
+                Baca <span className="text-fire-gradient">Artikel Kami</span>
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {articles.map(a => (
+                <Link key={a.id} to={`/lengkap/${a.slug}`} className="block">
+                  <Card className="border-border/60 hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
+                    {a.imageUrl && (
+                      <div className="aspect-video overflow-hidden bg-muted">
+                        <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    {!a.imageUrl && (
+                      <div className="aspect-video bg-fire-gradient-subtle flex items-center justify-center">
+                        <Flame className="h-12 w-12 text-fire-orange" />
+                      </div>
+                    )}
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-2 mb-2">
+                        {a.tiktokUrl && <Badge className="bg-black text-white border-0 text-xs"><Play className="h-3 w-3 mr-1" /> TikTok</Badge>}
+                        <Badge variant="outline" className="text-xs">{new Date(a.createdAt).toLocaleDateString("id-ID")}</Badge>
+                      </div>
+                      <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">{a.title}</h3>
+                      {a.excerpt && <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{a.excerpt}</p>}
+                      <span className="inline-flex items-center text-fire-orange font-semibold text-sm">
+                        Baca Selengkapnya <ChevronRight className="ml-1 h-4 w-4" />
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Program */}
       <section className="py-20">
@@ -145,18 +188,6 @@ export default function ArtikelPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-border bg-background">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Flame className="h-5 w-5 text-fire-orange" />
-            <span className="font-black text-sm uppercase tracking-wider">Camp Bebas Riba Indonesia</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            © 2026 Camp Bebas Riba Indonesia. Semua hak dilindungi.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }
