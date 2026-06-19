@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { api, type EventData } from "@/lib/api"
 import {
-  Flame, MapPin, Calendar, Clock, Users, Phone, Mail, ChevronDown,
+  Flame, MapPin, Calendar, Clock, Users, Phone, Mail,
   CheckCircle2, AlertTriangle, Star, BookOpen, TrendingUp, Shield,
   Heart, Award, Coffee, Bed, Tag, Wifi
 } from "lucide-react"
@@ -72,7 +72,7 @@ function Countdown({ eventDate }: { eventDate: Date }) {
   return (
     <div className="flex gap-3 justify-center flex-wrap">
       {blocks.map(({ label, value }) => (
-        <div key={label} className="flex flex-col items-center bg-black/40 border border-fire-orange/30 rounded-xl px-4 py-3 min-w-[70px] animate-pulse-fire">
+        <div key={label} className="countdown-card flex flex-col items-center rounded-xl px-4 py-3 min-w-[70px]">
           <span className="text-3xl font-extrabold text-fire-gradient tabular-nums">{String(value).padStart(2, "0")}</span>
           <span className="text-xs text-orange-300 mt-1 uppercase tracking-wider">{label}</span>
         </div>
@@ -141,24 +141,15 @@ export default function LandingPage() {
       <SiteNavbar active="home" />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-fire-gradient-subtle min-h-[90svh] flex items-center">
-        {/* Fire particle effect background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute bottom-0 left-1/4 w-px h-32 bg-gradient-to-t from-orange-600/60 to-transparent animate-flicker" />
-          <div className="absolute bottom-0 left-1/3 w-px h-48 bg-gradient-to-t from-red-600/40 to-transparent animate-flicker" style={{ animationDelay: "0.5s" }} />
-          <div className="absolute bottom-0 left-2/3 w-px h-36 bg-gradient-to-t from-orange-500/50 to-transparent animate-flicker" style={{ animationDelay: "0.3s" }} />
-          <div className="absolute bottom-0 right-1/4 w-px h-52 bg-gradient-to-t from-yellow-500/30 to-transparent animate-flicker" style={{ animationDelay: "0.7s" }} />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,oklch(0.45_0.22_25/0.2)_0%,transparent_70%)]" />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 py-20 text-center">
-          <Badge className="mb-6 bg-fire-orange/20 text-orange-300 border-fire-orange/40 px-4 py-1.5 text-sm font-semibold">
+      <section className="hero-section">
+        <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+          <Badge className="hero-badge mb-6 px-4 py-1.5 text-sm font-semibold">
             <Flame className="h-3.5 w-3.5 mr-1.5" />
             {event.campNumber || "CBR"} {event.region || "Indonesia"}
           </Badge>
 
           <div className="mb-2">
-            <Badge variant="outline" className="border-red-500/50 text-red-400 text-xs uppercase tracking-widest">
+            <Badge variant="outline" className="hero-quota text-xs uppercase tracking-widest">
               Kuota Terbatas!
             </Badge>
           </div>
@@ -178,21 +169,21 @@ export default function LandingPage() {
 
           {/* Event info cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-8">
-            <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left">
+             <div className="hero-info-card flex items-center gap-2 rounded-xl px-4 py-3 text-left">
               <Calendar className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Tanggal</p>
                 <p className="text-sm font-semibold text-white">{dateRange}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left">
+             <div className="hero-info-card flex items-center gap-2 rounded-xl px-4 py-3 text-left">
               <Clock className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Waktu</p>
                 <p className="text-sm font-semibold text-white">{eventTime}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left">
+             <div className="hero-info-card flex items-center gap-2 rounded-xl px-4 py-3 text-left">
               <MapPin className="h-5 w-5 text-fire-orange shrink-0" />
               <div>
                 <p className="text-xs text-gray-400">Lokasi</p>
@@ -216,7 +207,7 @@ export default function LandingPage() {
           <Button
             asChild
             size="lg"
-            className="bg-fire-red hover:bg-fire-orange text-white border-0 text-lg font-bold px-10 py-6 rounded-2xl shadow-lg animate-pulse-fire"
+            className="hero-button text-white border-0 text-lg font-bold px-10 py-6 rounded-2xl"
           >
             <Link to={cta}>{ctaLabel}</Link>
           </Button>
@@ -224,9 +215,6 @@ export default function LandingPage() {
           <div className="mt-4 text-xs text-gray-500">{dateRange} • {venue}</div>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="h-6 w-6 text-orange-400/60" />
-        </div>
       </section>
 
       {/* Masalah Peserta */}

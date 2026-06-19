@@ -55,35 +55,35 @@
   --card-foreground: oklch(0.1 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.1 0 0);
-  --primary: oklch(0.5 0.25 25);
+  --primary: #e60000;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.96 0 0);
   --secondary-foreground: oklch(0.15 0 0);
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.5 0.25 25);
+  --accent: #e60000;
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.5 0.25 25);
+  --destructive: #e60000;
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.9 0 0);
   --input: oklch(0.9 0 0);
-  --ring: oklch(0.5 0.25 25);
-  --chart-1: oklch(0.5 0.25 25);
+  --ring: #e60000;
+  --chart-1: #e60000;
   --chart-2: oklch(0.3 0 0);
   --chart-3: oklch(0.7 0 0);
-  --chart-4: oklch(0.5 0.25 25);
+  --chart-4: #e60000;
   --chart-5: oklch(0.1 0 0);
   --sidebar: oklch(0.96 0 0);
   --sidebar-foreground: oklch(0.1 0 0);
-  --sidebar-primary: oklch(0.5 0.25 25);
+  --sidebar-primary: #e60000;
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.96 0 0);
   --sidebar-accent-foreground: oklch(0.15 0 0);
   --sidebar-border: oklch(0.9 0 0);
-  --sidebar-ring: oklch(0.5 0.25 25);
+  --sidebar-ring: #e60000;
   /* Brand colors - Merah Putih Hitam */
-  --fire-red: oklch(0.5 0.25 25);
-  --fire-orange: oklch(0.5 0.25 25);
+  --fire-red: #e60000;
+  --fire-orange: #e60000;
   --fire-yellow: oklch(1 0 0);
   --fire-dark: oklch(0.1 0 0);
 }
@@ -95,32 +95,32 @@
   --card-foreground: oklch(1 0 0);
   --popover: oklch(0.15 0 0);
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.5 0.25 25);
+  --primary: #e60000;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.2 0 0);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.2 0 0);
   --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.5 0.25 25);
+  --accent: #e60000;
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.5 0.25 25);
+  --destructive: #e60000;
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.5 0.25 25);
-  --chart-1: oklch(0.5 0.25 25);
+  --ring: #e60000;
+  --chart-1: #e60000;
   --chart-2: oklch(0.3 0 0);
   --chart-3: oklch(0.7 0 0);
-  --chart-4: oklch(0.5 0.25 25);
+  --chart-4: #e60000;
   --chart-5: oklch(0.1 0 0);
   --sidebar: oklch(0.15 0 0);
   --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.5 0.25 25);
+  --sidebar-primary: #e60000;
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.2 0 0);
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.5 0.25 25);
+  --sidebar-ring: #e60000;
 }
 
 @layer base {
@@ -177,7 +177,7 @@
   .text-fire-gradient {
     background: none !important;
     -webkit-text-fill-color: currentColor !important;
-    color: #b91c1c !important;
+    color: #e60000 !important;
   }
 
   .problem-section,
@@ -207,10 +207,10 @@
 .problem-badge {
   display: inline-block;
   margin-bottom: 1rem;
-  border: 1px solid #fecaca;
+  border: 1px solid #ff4d4d;
   border-radius: 9999px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: #fff1f1;
+  color: #e60000;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -227,7 +227,7 @@
 
 .problem-header h2 span,
 .problem-footer span {
-  color: #b91c1c;
+  color: #e60000;
 }
 
 .problem-header p {
@@ -249,9 +249,9 @@
   align-items: flex-start;
   gap: 0.75rem;
   min-height: 5.5rem;
-  border: 1px solid #fecaca;
+  border: 1px solid #ff4d4d;
   border-radius: 0.75rem;
-  background: #fef2f2;
+  background: #fff1f1;
   padding: 1.25rem;
 }
 
@@ -260,7 +260,7 @@
   height: 1.25rem;
   flex: 0 0 auto;
   margin-top: 0.125rem;
-  color: #dc2626;
+  color: #e60000;
 }
 
 .problem-card p {
@@ -281,6 +281,57 @@
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.6;
+}
+
+.site-navbar {
+  background: #ffffff;
+}
+
+.hero-section {
+  display: flex;
+  align-items: center;
+  min-height: 90svh;
+  background: #111827;
+  color: #ffffff;
+}
+
+.hero-section,
+.hero-section * {
+  background-image: none;
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  will-change: auto;
+  mix-blend-mode: normal;
+}
+
+.hero-badge {
+  border: 1px solid #ff4d4d !important;
+  background: #1f2937 !important;
+  color: #ff4d4d !important;
+}
+
+.hero-quota {
+  border-color: #ff4d4d !important;
+  color: #ff4d4d !important;
+}
+
+.hero-section .text-fire-gradient {
+  background: none !important;
+  -webkit-text-fill-color: #ff4d4d !important;
+  color: #ff4d4d !important;
+}
+
+.hero-info-card,
+.countdown-card {
+  border: 1px solid #374151;
+  background: #1f2937;
+}
+
+.hero-button {
+  background: #e60000 !important;
+  box-shadow: none !important;
 }
 
 .benefit-section {
@@ -308,10 +359,10 @@
 .benefit-badge,
 .price-badge {
   display: inline-block;
-  border: 1px solid #fca5a5;
+  border: 1px solid #ff4d4d;
   border-radius: 9999px;
   background: #1f2937;
-  color: #fecaca;
+  color: #ff4d4d;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -331,7 +382,7 @@
 }
 
 .benefit-header h2 span {
-  color: #fca5a5;
+  color: #ff4d4d;
 }
 
 .benefit-header p {
@@ -368,7 +419,7 @@
   height: 1.25rem;
   flex: 0 0 auto;
   margin-top: 0.125rem;
-  color: #fca5a5;
+  color: #ff4d4d;
 }
 
 .benefit-card p {
@@ -416,7 +467,7 @@
   width: 100%;
   border: 0 !important;
   border-radius: 0.75rem !important;
-  background: #dc2626 !important;
+  background: #e60000 !important;
   color: #ffffff !important;
   font-weight: 700 !important;
 }
@@ -489,7 +540,7 @@
 
 /* Gradient utilities - Merah Putih Hitam */
 .bg-fire-gradient {
-  background: linear-gradient(135deg, oklch(0.1 0 0) 0%, oklch(0.5 0.25 25) 50%, oklch(0.6 0.25 25) 100%);
+  background: linear-gradient(135deg, oklch(0.1 0 0) 0%, #e60000 50%, oklch(0.6 0.25 25) 100%);
 }
 
 .bg-fire-gradient-subtle {
@@ -497,14 +548,14 @@
 }
 
 .text-fire-gradient {
-  background: linear-gradient(90deg, oklch(0.5 0.25 25), oklch(1 0 0));
+  background: linear-gradient(90deg, #e60000, oklch(1 0 0));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .border-fire {
-  border-color: oklch(0.5 0.25 25);
+  border-color: #e60000;
 }
 
 @keyframes flicker {
@@ -517,8 +568,8 @@
 }
 
 @keyframes pulse-fire {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.5 0.25 25 / 0.4); }
-  50% { box-shadow: 0 0 40px oklch(0.5 0.25 25 / 0.7); }
+  0%, 100% { box-shadow: 0 0 20px rgb(230 0 0 / 0.4); }
+  50% { box-shadow: 0 0 40px rgb(230 0 0 / 0.7); }
 }
 
 .animate-pulse-fire {

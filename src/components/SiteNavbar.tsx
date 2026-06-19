@@ -17,7 +17,7 @@ export default function SiteNavbar({ active }: { active?: Active }) {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur">
+    <nav className="site-navbar sticky top-0 z-50 border-b border-border bg-background">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="CBR Indonesia" className="h-8 w-8 object-contain" />
