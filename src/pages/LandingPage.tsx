@@ -232,29 +232,27 @@ export default function LandingPage() {
       {/* Masalah Peserta */}
       <section className="problem-section mobile-safe py-20 bg-white text-black">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-destructive/10 text-destructive border-destructive/20">Apakah Anda Mengalami Ini?</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-4">
+          <div className="problem-header">
+            <div className="problem-badge">Apakah Anda Mengalami Ini?</div>
+            <h2>
               Masalah yang Menghantui<br />
-              <span className="text-fire-gradient">Setiap Hari</span>
+              <span>Setiap Hari</span>
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">
+            <p>
               Jutaan orang Indonesia terjerat masalah hutang dan riba. Anda tidak sendirian.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="problem-grid">
             {masalahList.map((item, i) => (
-              <Card key={i} className="problem-card border-red-200 bg-red-50 shadow-none">
-                <CardContent className="p-5 flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-black leading-relaxed">{item.text}</p>
-                </CardContent>
-              </Card>
+              <div key={i} className="problem-card">
+                <AlertTriangle className="problem-icon" />
+                <p>{item.text}</p>
+              </div>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <p className="text-lg font-semibold text-foreground">
-              Kalau iya, <span className="text-fire-gradient font-black">CAMP BEBAS RIBA</span> adalah solusi untuk Anda!
+          <div className="problem-footer">
+            <p>
+              Kalau iya, <span>CAMP BEBAS RIBA</span> adalah solusi untuk Anda!
             </p>
           </div>
         </div>
