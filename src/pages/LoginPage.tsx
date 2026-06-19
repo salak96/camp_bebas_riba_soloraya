@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -39,20 +39,7 @@ export default function LoginPage() {
     loadEvent()
   }, [])
 
-  useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    if (!clientId) return
-    const script = document.createElement("script")
-    script.src = "https://accounts.google.com/gsi/client"
-    script.async = true
-    script.onload = () => {
-      ;(window as any).google?.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredential })
-      ;(window as any).google?.accounts.id.renderButton(document.getElementById("google-login"), { theme: "outline", size: "large", width: 360, text: "signin_with" })
-    }
-    document.body.appendChild(script)
-  }, [])
-
-  async function handleGoogleCredential(response: { credential: string }) {
+  const handleGoogleCredential = useCallback(async (response: { credential: string }) => {
     setLoading(true)
     try {
       const data = await api<{ token: string; user: User }>("/auth/google", { method: "POST", body: JSON.stringify({ credential: response.credential }) })
@@ -65,7 +52,23 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [navigate, refreshAuth])
+
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!clientId) return
+    const script = document.createElement("script")
+    script.src = "https://accounts.google.com/gsi/client"
+    script.async = true
+    script.onload = () => {
+      ;(window as any).google?.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredential })
+      ;(window as any).google?.accounts.id.renderButton(document.getElementById("google-login"), { theme: "outline", size: "large", width: 360, text: "signin_with" })
+    }
+    document.body.appendChild(script)
+    return () => {
+      script.remove()
+    }
+  }, [handleGoogleCredential])
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),

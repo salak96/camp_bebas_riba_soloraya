@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { api, clearToken, toProfile, type Profile, type User } from "@/lib/api"
 
 type AuthContextType = {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  async function refreshAuth() {
+  const refreshAuth = useCallback(async () => {
     try {
       const data = await api<{ user: User | null }>("/auth/me")
       setUser(data.user)
@@ -31,19 +31,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearToken()
       setUser(null)
     }
-  }
+  }, [])
 
   useEffect(() => {
     refreshAuth().finally(() => setLoading(false))
-  }, [])
+  }, [refreshAuth])
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     clearToken()
     setUser(null)
-  }
+  }, [])
+
+  const value = useMemo(() => ({
+    session: user ? { user } : null,
+    user,
+    profile: toProfile(user),
+    loading,
+    signOut,
+    refreshAuth,
+  }), [user, loading, signOut, refreshAuth])
 
   return (
-    <AuthContext.Provider value={{ session: user ? { user } : null, user, profile: toProfile(user), loading, signOut, refreshAuth }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
