@@ -283,8 +283,150 @@
   line-height: 1.6;
 }
 
+.benefit-section {
+  background: #111827;
+  color: #ffffff;
+  padding: 5rem 0;
+}
+
+.benefit-section,
+.benefit-section * {
+  background-image: none;
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  will-change: auto;
+  mix-blend-mode: normal;
+}
+
+.benefit-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.benefit-badge,
+.price-badge {
+  display: inline-block;
+  border: 1px solid #fca5a5;
+  border-radius: 9999px;
+  background: #1f2937;
+  color: #fecaca;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+}
+
+.benefit-badge {
+  margin-bottom: 1rem;
+}
+
+.benefit-header h2 {
+  margin: 0 0 1rem;
+  color: #ffffff;
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.benefit-header h2 span {
+  color: #fca5a5;
+}
+
+.benefit-header p {
+  max-width: 32rem;
+  margin: 0 auto;
+  color: #d1d5db;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.benefit-header strong {
+  color: #ffffff;
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.benefit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 5rem;
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  background: #1f2937;
+  padding: 1rem;
+}
+
+.benefit-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  margin-top: 0.125rem;
+  color: #fca5a5;
+}
+
+.benefit-card p {
+  margin: 0;
+  color: #f3f4f6;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.price-box-wrap {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.price-box {
+  display: inline-block;
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid #374151;
+  border-radius: 1rem;
+  background: #1f2937;
+  padding: 1.5rem 2rem;
+}
+
+.price-label,
+.price-desc {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 0.875rem;
+}
+
+.price-value {
+  margin: 0.25rem 0;
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.price-badge {
+  margin: 1rem 0 1.25rem;
+}
+
+.price-button {
+  width: 100%;
+  border: 0 !important;
+  border-radius: 0.75rem !important;
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
 @media (max-width: 1024px) {
   .problem-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .benefit-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -311,6 +453,37 @@
     min-height: auto;
     border-radius: 0.625rem;
     padding: 1rem;
+  }
+
+  .benefit-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .benefit-header {
+    margin-bottom: 2rem;
+  }
+
+  .benefit-header h2 {
+    font-size: 1.875rem;
+  }
+
+  .benefit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .benefit-card {
+    min-height: auto;
+    border-radius: 0.625rem;
+    padding: 1rem;
+  }
+
+  .price-box {
+    padding: 1.25rem;
+  }
+
+  .price-value {
+    font-size: 2.25rem;
   }
 }
 

@@ -289,44 +289,31 @@ export default function LandingPage() {
       </section>
 
       {/* Benefit */}
-      <section className="py-20 bg-fire-gradient-subtle text-white">
+      <section className="benefit-section">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-fire-orange/20 text-orange-300 border-fire-orange/40">Yang Anda Dapatkan</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
-              Benefit <span className="text-fire-gradient">Peserta</span>
-            </h2>
-            <p className="text-gray-400 max-w-lg mx-auto">
-              Semua sudah termasuk dalam HTM <strong className="text-white">Rp {priceFormatted}</strong>
-            </p>
+          <div className="benefit-header">
+            <div className="benefit-badge">Yang Anda Dapatkan</div>
+            <h2>Benefit <span>Peserta</span></h2>
+            <p>Semua sudah termasuk dalam HTM <strong>Rp {priceFormatted}</strong></p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="benefit-grid">
             {benefitList.map((item, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors">
-                <CheckCircle2 className="h-5 w-5 text-fire-orange shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-200 leading-relaxed">{item.text}</p>
+              <div key={i} className="benefit-card">
+                <CheckCircle2 className="benefit-icon" />
+                <p>{item.text}</p>
               </div>
             ))}
           </div>
 
-          {/* Price CTA */}
-          <div className="mt-12 text-center">
-            <div className="inline-block bg-white/5 border border-white/20 rounded-2xl px-8 py-6 max-w-md">
-              <p className="text-gray-400 text-sm mb-1">Harga Tiket</p>
-              <p className="text-5xl font-black text-white mb-1">Rp {priceFormatted}</p>
-              <p className="text-gray-400 text-sm mb-4">Per peserta — termasuk seluruh benefit di atas</p>
-              <Badge variant="outline" className="border-red-400/60 text-red-400 mb-5">
-                Kuota Terbatas!
-              </Badge>
-              <div>
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-fire-red hover:bg-fire-orange text-white border-0 font-bold rounded-xl"
-                >
-                  <Link to={cta}>{ctaLabel}</Link>
-                </Button>
-              </div>
+          <div className="price-box-wrap">
+            <div className="price-box">
+              <p className="price-label">Harga Tiket</p>
+              <p className="price-value">Rp {priceFormatted}</p>
+              <p className="price-desc">Per peserta — termasuk seluruh benefit di atas</p>
+              <div className="price-badge">Kuota Terbatas!</div>
+              <Button asChild size="lg" className="price-button">
+                <Link to={cta}>{ctaLabel}</Link>
+              </Button>
             </div>
           </div>
         </div>
