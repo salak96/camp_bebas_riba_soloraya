@@ -126,9 +126,29 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    overflow-x: hidden;
+    background: #ffffff;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-safe {
+    filter: none !important;
+    backdrop-filter: none !important;
+    mix-blend-mode: normal !important;
+    background-attachment: scroll !important;
   }
 }
 

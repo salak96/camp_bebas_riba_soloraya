@@ -230,7 +230,7 @@ export default function LandingPage() {
       </section>
 
       {/* Masalah Peserta */}
-      <section className="py-20 bg-background">
+      <section className="mobile-safe py-20 bg-background">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-destructive/10 text-destructive border-destructive/20">Apakah Anda Mengalami Ini?</Badge>
