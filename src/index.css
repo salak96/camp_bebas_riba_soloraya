@@ -287,6 +287,64 @@
   background: #ffffff;
 }
 
+.about-page,
+.about-page * {
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  will-change: auto;
+  mix-blend-mode: normal;
+}
+
+.about-hero,
+.about-dark-section {
+  background: #111827;
+  color: #ffffff;
+  background-image: none;
+}
+
+.about-badge {
+  border: 1px solid #ff4d4d !important;
+  background: #1f2937 !important;
+  color: #ff4d4d !important;
+}
+
+.about-page .text-fire-gradient {
+  background: none !important;
+  -webkit-text-fill-color: #e60000 !important;
+  color: #e60000 !important;
+}
+
+.vision-title {
+  max-width: 56rem;
+  margin: 0 auto 1rem;
+  color: #111827;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.vision-title::first-letter {
+  color: #e60000;
+  font-size: 1.25em;
+}
+
+.about-card {
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.about-dark-card {
+  border: 1px solid #374151;
+  background: #1f2937;
+  transition: none;
+}
+
 .hero-section {
   display: flex;
   align-items: center;

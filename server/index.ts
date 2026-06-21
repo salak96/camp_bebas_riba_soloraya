@@ -401,7 +401,8 @@ app.delete("/api/admin/articles/:id", auth, admin, async (req, res) => {
 })
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  res.status(400).json({ message: err.message || "Request gagal" })
+  console.error(err)
+  res.status(500).json({ message: "Terjadi kesalahan server. Silakan coba lagi nanti." })
 })
 
 app.listen(port, () => {

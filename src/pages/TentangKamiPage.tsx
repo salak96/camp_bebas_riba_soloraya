@@ -34,13 +34,13 @@ const fokusList = [
 
 export default function TentangKamiPage() {
   return (
-    <div className="min-h-svh bg-background text-foreground">
+    <div className="about-page min-h-svh bg-background text-foreground">
       <SiteNavbar active="tentang" />
 
       {/* Hero */}
-      <section className="relative bg-fire-gradient-subtle py-20">
+      <section className="about-hero py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-fire-orange/20 text-orange-300 border-fire-orange/40">Tentang Kami</Badge>
+          <Badge className="about-badge mb-4">Tentang Kami</Badge>
           <h1 className="text-4xl sm:text-5xl font-black text-white mb-4">
             Camp Bebas Riba <span className="text-fire-gradient">Indonesia</span>
           </h1>
@@ -62,7 +62,7 @@ export default function TentangKamiPage() {
                 <Eye className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground mb-4 leading-relaxed">
+            <h2 className="vision-title">
               Menciptakan generasi yang bebas riba dan memiliki ketahanan finansial, spiritual, dan sosial untuk menciptakan masyarakat yang lebih sejahtera dan harmonis.
             </h2>
           </div>
@@ -87,7 +87,7 @@ export default function TentangKamiPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {misiList.map((item, i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow border-border/60">
+              <Card key={i} className="about-card">
                 <CardContent className="p-6">
                   <div className="mb-4 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                     <item.icon className="h-6 w-6 text-primary" />
@@ -114,7 +114,7 @@ export default function TentangKamiPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {fokusList.map((item, i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow border-border/60">
+              <Card key={i} className="about-card">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -135,7 +135,7 @@ export default function TentangKamiPage() {
       <Separator />
 
       {/* Nilai-Nilai Utama */}
-      <section className="py-20 bg-fire-gradient-subtle text-white">
+      <section className="about-dark-section py-20 text-white">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-fire-orange/20 text-orange-300 border-fire-orange/40">Nilai Kami</Badge>
@@ -145,7 +145,7 @@ export default function TentangKamiPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {nilaiList.map((item, i) => (
-              <div key={i} className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors">
+              <div key={i} className="about-dark-card flex items-start gap-4 rounded-xl p-6">
                 <div className="w-12 h-12 rounded-xl bg-fire-orange/20 flex items-center justify-center shrink-0">
                   <item.icon className="h-6 w-6 text-fire-orange" />
                 </div>
