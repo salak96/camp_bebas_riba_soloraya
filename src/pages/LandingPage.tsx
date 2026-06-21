@@ -42,15 +42,25 @@ function formatCurrency(amount: number) {
   return new Intl.NumberFormat("id-ID").format(amount)
 }
 
-function Countdown({ eventDate }: { eventDate: Date }) {
-  const now = new Date()
-  const diff = Math.max(eventDate.getTime() - now.getTime(), 0)
-  const timeLeft = {
+function getTimeLeft(eventDate: Date) {
+  const diff = Math.max(eventDate.getTime() - Date.now(), 0)
+  return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
     minutes: Math.floor((diff / (1000 * 60)) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   }
+}
+
+function Countdown({ eventDate }: { eventDate: Date }) {
+  const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(eventDate))
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setTimeLeft(getTimeLeft(eventDate))
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [eventDate])
 
   const blocks = [
     { label: "Hari", value: timeLeft.days },
