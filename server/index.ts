@@ -28,6 +28,7 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
 
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use("/uploads", express.static(uploadDir))
 
 const upload = multer({
@@ -136,7 +137,8 @@ async function registrationNumber() {
 app.get("/api/health", (_req, res) => res.json({ ok: true }))
 
 app.post("/api/auth/register", async (req, res) => {
-  const { fullName, email, password } = req.body
+  const fullName = req.body.fullName || req.body.full_name || req.body.name || req.body.nama
+  const { email, password } = req.body
   if (!fullName || !email || !password) return res.status(422).json({ message: "Nama, email, password wajib" })
   const exists = await prisma.user.findUnique({ where: { email } })
   if (exists) return res.status(409).json({ message: "Email sudah terdaftar" })
