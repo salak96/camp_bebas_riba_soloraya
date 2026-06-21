@@ -72,7 +72,7 @@ export default function TentangKamiPage() {
       <Separator />
 
       {/* Misi */}
-      <section className="py-20 bg-muted/30">
+      <section className="about-light-section py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Misi</Badge>
@@ -85,7 +85,7 @@ export default function TentangKamiPage() {
               Misi <span className="text-fire-gradient">Kami</span>
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="about-grid about-grid-3">
             {misiList.map((item, i) => (
               <Card key={i} className="about-card">
                 <CardContent className="p-6">
@@ -104,7 +104,7 @@ export default function TentangKamiPage() {
       <Separator />
 
       {/* Fokus Utama */}
-      <section className="py-20">
+      <section className="about-light-section py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Fokus Kami</Badge>
@@ -112,7 +112,7 @@ export default function TentangKamiPage() {
               Fokus <span className="text-fire-gradient">Utama</span>
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="about-grid about-grid-2">
             {fokusList.map((item, i) => (
               <Card key={i} className="about-card">
                 <CardContent className="p-6">
@@ -143,7 +143,7 @@ export default function TentangKamiPage() {
               Nilai-Nilai <span className="text-fire-gradient">Utama</span>
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="about-grid about-grid-2">
             {nilaiList.map((item, i) => (
               <div key={i} className="about-dark-card flex items-start gap-4 rounded-xl p-6">
                 <div className="w-12 h-12 rounded-xl bg-fire-orange/20 flex items-center justify-center shrink-0">
