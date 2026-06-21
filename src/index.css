@@ -386,6 +386,35 @@
   transition: none;
 }
 
+.values-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.value-item {
+  display: block;
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  background: #1f2937;
+  padding: 1.25rem;
+}
+
+.value-item h3 {
+  margin: 0 0 0.5rem;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.value-item p {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
 .hero-section {
   display: flex;
   align-items: center;
@@ -624,8 +653,26 @@
 
   .benefit-grid,
   .about-grid-2,
-  .about-grid-3 {
+  .about-grid-3,
+  .values-list {
     grid-template-columns: 1fr;
+  }
+
+  .about-dark-section,
+  .about-dark-section * {
+    background-image: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    mix-blend-mode: normal !important;
+    box-shadow: none !important;
+  }
+
+  .value-item {
+    border-radius: 0.625rem;
+    padding: 1rem;
   }
 
   .benefit-card {

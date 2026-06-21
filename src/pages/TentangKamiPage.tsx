@@ -143,16 +143,11 @@ export default function TentangKamiPage() {
               Nilai-Nilai <span className="text-fire-gradient">Utama</span>
             </h2>
           </div>
-          <div className="about-grid about-grid-2">
+          <div className="values-list">
             {nilaiList.map((item, i) => (
-              <div key={i} className="about-dark-card flex items-start gap-4 rounded-xl p-6">
-                <div className="w-12 h-12 rounded-xl bg-fire-orange/20 flex items-center justify-center shrink-0">
-                  <item.icon className="h-6 w-6 text-fire-orange" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">{item.label}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
-                </div>
+              <div key={i} className="value-item">
+                <h3>{item.label}</h3>
+                <p>{item.desc}</p>
               </div>
             ))}
           </div>
