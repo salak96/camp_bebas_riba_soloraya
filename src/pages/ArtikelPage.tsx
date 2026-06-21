@@ -74,14 +74,14 @@ export default function ArtikelPage() {
       <SiteNavbar active="artikel" />
 
       {/* Hero */}
-      <section className="relative bg-fire-gradient-subtle py-20">
+      <section className="article-hero py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-fire-orange/20 text-orange-300 border-fire-orange/40">Artikel</Badge>
+          <Badge className="article-badge mb-4">Artikel</Badge>
           <h1 className="text-4xl sm:text-5xl font-black text-white mb-4">
             Bebaskan Diri Anda dari<br />
             <span className="text-fire-gradient">Jeratan Utang dan Riba!</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="article-hero-text text-lg max-w-2xl mx-auto leading-relaxed">
             CBR Indonesia merupakan organisasi Masyarakat yang berdedikasi untuk membantu masyarakat keluar dari jeratan utang riba dan membangun kehidupan finansial yang sehat.
           </p>
         </div>
@@ -174,7 +174,7 @@ export default function ArtikelPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-fire-gradient-subtle text-white text-center">
+      <section className="article-cta py-16 text-white text-center">
         <div className="max-w-2xl mx-auto px-4">
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-4">
             Siap Bebas dari <span className="text-fire-gradient">Riba?</span>

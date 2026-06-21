@@ -52,10 +52,10 @@ export default function DonasiPage() {
   }
 
   return (
-    <div className="min-h-svh bg-background text-foreground">
+    <div className="donasi-page min-h-svh bg-background text-foreground">
       <SiteNavbar active="donasi" />
 
-      <section className="bg-fire-gradient-subtle py-20 text-center text-white">
+      <section className="donasi-hero py-20 text-center text-white">
         <div className="max-w-3xl mx-auto px-4">
           <Badge className="mb-4 bg-fire-orange/20 text-white border-white/20">Open Donasi</Badge>
           <Heart className="h-14 w-14 mx-auto mb-4 text-fire-orange" />
@@ -127,7 +127,7 @@ export default function DonasiPage() {
                 <Button variant="outline" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Selanjutnya</Button>
               </div>
               <Separator className="my-6" />
-              <div className="rounded-2xl bg-fire-gradient-subtle text-white p-6 text-center">
+              <div className="donasi-total rounded-2xl text-white p-6 text-center">
                 <p className="text-sm text-gray-300 mb-1">Total perolehan donasi Putaran ke 3 per hari ini</p>
                 <p className="text-4xl font-black mb-4">Rp {rupiah(total)}</p>
                 <p className="text-sm text-gray-300">Saldo Kas Sedekah Beras</p>

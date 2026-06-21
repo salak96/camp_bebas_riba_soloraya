@@ -313,6 +313,98 @@
   background: #ffffff;
 }
 
+.home-final-cta {
+  background: #111827 !important;
+  color: #ffffff !important;
+  background-image: none !important;
+}
+
+.home-final-cta h2,
+.home-final-cta p {
+  color: #ffffff !important;
+}
+
+.home-final-cta .text-fire-gradient {
+  background: none !important;
+  -webkit-text-fill-color: #e60000 !important;
+  color: #e60000 !important;
+}
+
+.home-final-logo {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+  display: block;
+}
+
+.donasi-page {
+  background: #ffffff;
+  color: #111827;
+}
+
+.donasi-hero,
+.donasi-total {
+  background: #111827 !important;
+  color: #ffffff !important;
+  background-image: none !important;
+}
+
+.donasi-page [data-slot="card"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.donasi-page .text-foreground {
+  color: #111827 !important;
+}
+
+.donasi-page .text-muted-foreground {
+  color: #4b5563 !important;
+}
+
+.donasi-hero .text-white,
+.donasi-hero h1,
+.donasi-hero p,
+.donasi-total,
+.donasi-total p {
+  color: #ffffff !important;
+}
+
+.article-hero,
+.article-cta {
+  background: #111827 !important;
+  color: #ffffff !important;
+  background-image: none !important;
+}
+
+.article-badge {
+  border: 1px solid #ff4d4d !important;
+  background: #1f2937 !important;
+  color: #ffffff !important;
+}
+
+.article-hero h1,
+.article-hero-text {
+  color: #ffffff !important;
+}
+
+.article-hero .text-fire-gradient {
+  background: none !important;
+  -webkit-text-fill-color: #e60000 !important;
+  color: #e60000 !important;
+}
+
+.article-cta h2,
+.article-cta p {
+  color: #ffffff !important;
+}
+
+.article-cta .text-fire-gradient {
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
 .about-page,
 .about-page * {
   filter: none;
@@ -532,6 +624,40 @@
   background: none !important;
   -webkit-text-fill-color: #ff4d4d !important;
   color: #ff4d4d !important;
+}
+
+.hero-welcome {
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #ff4d4d;
+  border-radius: 1.25rem;
+  background: #1f2937;
+  padding: 1.5rem;
+}
+
+.hero-welcome-small {
+  margin: 0 0 0.75rem;
+  color: #ff4d4d;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-welcome h2 {
+  margin: 0 0 0.75rem;
+  color: #ffffff;
+  font-size: clamp(1.65rem, 4vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.hero-welcome p:last-child {
+  margin: 0;
+  color: #f3f4f6;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 .hero-info-card,

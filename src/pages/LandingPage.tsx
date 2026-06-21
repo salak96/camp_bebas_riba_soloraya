@@ -143,6 +143,12 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+          <div className="hero-welcome mb-8">
+            <p className="hero-welcome-small">Selamat datang Camp Bebas Riba Indonesia</p>
+            <h2>Tinggalkan Riba, Lunasi Hutang, Tuntaskan!</h2>
+            <p>Membantu masyarakat menuju kehidupan finansial yang bebas, sejahtera, dan berlandaskan nilai-nilai spiritual.</p>
+          </div>
+
           <Badge className="hero-badge mb-6 px-4 py-1.5 text-sm font-semibold">
             <Flame className="h-3.5 w-3.5 mr-1.5" />
             {event.campNumber || "CBR"} {event.region || "Indonesia"}
@@ -395,9 +401,9 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-fire-gradient-subtle text-white text-center">
+      <section className="home-final-cta py-20 text-white text-center">
         <div className="max-w-2xl mx-auto px-4">
-          <Flame className="h-12 w-12 text-fire-orange mx-auto mb-4 animate-flicker" />
+          <img src="/logo.png" alt="CBR Indonesia" className="home-final-logo mx-auto mb-4" />
           <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
             Saatnya Bangkit!<br />
             <span className="text-fire-gradient">Jangan Tunggu Besok</span>
