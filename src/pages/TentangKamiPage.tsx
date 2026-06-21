@@ -135,13 +135,11 @@ export default function TentangKamiPage() {
       <Separator />
 
       {/* Nilai-Nilai Utama */}
-      <section className="about-dark-section py-20 text-white">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-fire-orange/20 text-orange-300 border-fire-orange/40">Nilai Kami</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
-              Nilai-Nilai <span className="text-fire-gradient">Utama</span>
-            </h2>
+      <section className="values-section">
+        <div className="values-container">
+          <div className="values-header">
+            <div className="values-badge">Nilai Kami</div>
+            <h2>Nilai-Nilai <span>Utama</span></h2>
           </div>
           <div className="values-list">
             {nilaiList.map((item, i) => (
