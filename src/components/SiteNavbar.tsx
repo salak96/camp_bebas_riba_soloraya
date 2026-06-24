@@ -37,7 +37,7 @@ export default function SiteNavbar({ active }: { active?: Active }) {
           <div className="h-4 w-px bg-border mx-1" />
           {session ? (
             <Button asChild size="sm" className="bg-fire-red hover:bg-fire-orange text-white border-0">
-              <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Dashboard</Link>
+              <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Profile</Link>
             </Button>
           ) : (
             <>
@@ -58,7 +58,7 @@ export default function SiteNavbar({ active }: { active?: Active }) {
           <div className="pt-2 flex gap-2">
             {session ? (
               <Button asChild size="sm" className="w-full bg-fire-red hover:bg-fire-orange text-white border-0">
-                <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Dashboard</Link>
+                <Link to={profile?.role === "admin" ? "/admin" : "/dashboard"}>Profile</Link>
               </Button>
             ) : (
               <>

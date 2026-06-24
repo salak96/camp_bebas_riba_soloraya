@@ -129,7 +129,7 @@ export default function LandingPage() {
     ? profile?.role === "admin" ? "/admin" : "/dashboard"
     : "/register"
 
-  const ctaLabel = session ? "Lihat Dashboard Saya" : "Daftar Sekarang"
+  const ctaLabel = session ? "Lihat Profile Saya" : "Daftar Sekarang"
 
   const dateRange = formatDateRange(event.startDate, event.endDate)
   const eventTime = event.startTime || "08.00 WIB – Selesai"

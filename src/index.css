@@ -313,6 +313,88 @@
   background: #ffffff;
 }
 
+.admin-donation-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.admin-donation-card {
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.admin-donation-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-donation-list,
+.admin-email-list {
+  display: block;
+}
+
+.admin-donation-item,
+.admin-email-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-donation-name,
+.admin-email-name {
+  margin: 0;
+  color: #111827;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.admin-donation-meta,
+.admin-email-address {
+  margin: 0.25rem 0 0;
+  color: #4b5563;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.admin-donation-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .admin-donation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-donation-header,
+  .admin-donation-item,
+  .admin-email-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-donation-actions {
+    width: 100%;
+  }
+
+  .admin-donation-actions button {
+    flex: 1;
+  }
+}
+
 .home-final-cta {
   background: #111827 !important;
   color: #ffffff !important;

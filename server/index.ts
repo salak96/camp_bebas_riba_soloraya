@@ -241,6 +241,44 @@ app.post("/api/my/registration/proof", auth, upload.single("proof"), async (req,
   res.json({ registration: updated })
 })
 
+app.get("/api/admin/users", auth, admin, async (_req, res) => {
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: { id: true, email: true, fullName: true, role: true, createdAt: true },
+  })
+  res.json({ users })
+})
+
+app.post("/api/admin/users", auth, admin, async (req, res) => {
+  const { fullName, email, password, role } = req.body
+  if (!email || !password || password.length < 8) return res.status(422).json({ message: "Email dan password minimal 8 karakter wajib" })
+  const exists = await prisma.user.findUnique({ where: { email } })
+  if (exists) return res.status(409).json({ message: "Email sudah terdaftar" })
+  const passwordHash = await bcrypt.hash(password, 10)
+  const user = await prisma.user.create({ data: { fullName: fullName || null, email, passwordHash, role: role === "admin" ? "admin" : "peserta" } })
+  res.json({ user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role, createdAt: user.createdAt } })
+})
+
+app.put("/api/admin/users/:id", auth, admin, async (req, res) => {
+  const id = Number(req.params.id)
+  const { fullName, email, password, role } = req.body
+  if (!id || !email) return res.status(422).json({ message: "Data user tidak valid" })
+  const data: any = { fullName: fullName || null, email, role: role === "admin" ? "admin" : "peserta" }
+  if (password) {
+    if (password.length < 8) return res.status(422).json({ message: "Password minimal 8 karakter" })
+    data.passwordHash = await bcrypt.hash(password, 10)
+  }
+  const user = await prisma.user.update({ where: { id }, data })
+  res.json({ user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role, createdAt: user.createdAt } })
+})
+
+app.delete("/api/admin/users/:id", auth, admin, async (req, res) => {
+  const id = Number(req.params.id)
+  if (id === req.user!.id) return res.status(422).json({ message: "Tidak bisa hapus akun sendiri" })
+  await prisma.user.delete({ where: { id } })
+  res.json({ ok: true })
+})
+
 app.get("/api/admin/stats", auth, admin, async (_req, res) => {
   const event = await activeEvent()
   const [total, lunas, menunggu, belum] = await Promise.all([

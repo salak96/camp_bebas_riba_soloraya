@@ -45,9 +45,18 @@ type Donation = {
   isPaid: boolean
 }
 
-const emptyDonation = { name: "", amount: 0, method: "transfer", round: 3, isPaid: true }
+type AdminUser = {
+  id: number
+  fullName: string | null
+  email: string
+  role: "peserta" | "admin"
+  createdAt: string
+}
 
-type Tab = "peserta" | "event" | "artikel" | "donasi"
+const emptyDonation = { name: "", amount: 0, method: "transfer", round: 3, isPaid: true }
+const emptyUserForm = { fullName: "", email: "", password: "", role: "peserta" as "peserta" | "admin" }
+
+type Tab = "peserta" | "event" | "artikel" | "donasi" | "user"
 
 export default function AdminPage() {
   const { signOut } = useAuth()
@@ -79,16 +88,21 @@ export default function AdminPage() {
   const [donationForm, setDonationForm] = useState(emptyDonation)
   const [editingDonationId, setEditingDonationId] = useState<number | null>(null)
   const [donationModalOpen, setDonationModalOpen] = useState(false)
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [userForm, setUserForm] = useState(emptyUserForm)
+  const [editingUserId, setEditingUserId] = useState<number | null>(null)
+  const [userModalOpen, setUserModalOpen] = useState(false)
 
   const loadRegistrations = useCallback(async () => {
     setLoading(true)
     try {
-      const [regData, , articleData, eventData, donationData] = await Promise.all([
+      const [regData, , articleData, eventData, donationData, userData] = await Promise.all([
         api<{ registrations: any[] }>("/admin/registrations"),
         api<{ quota: number }>("/admin/stats"),
         api<{ articles: Article[] }>("/admin/articles"),
         api<{ event: EventData }>("/admin/events/active"),
         api<{ donations: Donation[] }>("/admin/donations"),
+        api<{ users: AdminUser[] }>("/admin/users"),
       ])
       setRegistrations(regData.registrations.map(toRegistration).filter(Boolean) as Registration[])
       setEvent(eventData.event)
@@ -107,6 +121,7 @@ export default function AdminPage() {
       })
       setArticles(articleData.articles)
       setDonations(donationData.donations)
+      setUsers(userData.users)
     } catch {
       toast.error("Gagal memuat data")
     } finally {
@@ -301,6 +316,43 @@ export default function AdminPage() {
     }
   }
 
+  function resetUserForm() {
+    setUserForm(emptyUserForm)
+    setEditingUserId(null)
+    setUserModalOpen(false)
+  }
+
+  function openNewUserModal() {
+    setUserForm(emptyUserForm)
+    setEditingUserId(null)
+    setUserModalOpen(true)
+  }
+
+  async function saveUser() {
+    try {
+      const path = editingUserId ? `/admin/users/${editingUserId}` : "/admin/users"
+      const method = editingUserId ? "PUT" : "POST"
+      const body = editingUserId && !userForm.password ? { ...userForm, password: undefined } : userForm
+      await api(path, { method, body: JSON.stringify(body) })
+      resetUserForm()
+      await loadRegistrations()
+      toast.success("User berhasil disimpan")
+    } catch (error) {
+      toast.error("Gagal simpan user: " + (error instanceof Error ? error.message : "Terjadi kesalahan"))
+    }
+  }
+
+  async function deleteUser(id: number) {
+    if (!confirm("Hapus user ini? Data pendaftaran terkait juga akan terhapus.")) return
+    try {
+      await api(`/admin/users/${id}`, { method: "DELETE" })
+      setUsers(prev => prev.filter(u => u.id !== id))
+      toast.success("User berhasil dihapus")
+    } catch (error) {
+      toast.error("Gagal hapus user: " + (error instanceof Error ? error.message : "Terjadi kesalahan"))
+    }
+  }
+
   function exportCSV() {
     const headers = ["No", "No. Pendaftaran", "Nama", "Email", "WhatsApp", "Gender", "Usia", "Kota", "Ukuran Kaos", "Ukuran Khimar", "Status Pembayaran", "Tanggal Daftar"]
     const rows = filtered.map((r, i) => [
@@ -333,6 +385,7 @@ export default function AdminPage() {
     { key: "event", label: "Edit Event", icon: <Calendar className="h-4 w-4" /> },
     { key: "artikel", label: "Artikel", icon: <FileText className="h-4 w-4" /> },
     { key: "donasi", label: "Donasi", icon: <Heart className="h-4 w-4" /> },
+    { key: "user", label: "User Terdaftar", icon: <Users className="h-4 w-4" /> },
   ]
 
   return (
@@ -766,60 +819,103 @@ export default function AdminPage() {
         )}
         {/* Tab Content: Donasi */}
         {activeTab === "donasi" && (
-          <Card className="border-border/60">
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-lg"><Heart className="h-5 w-5" /> Manajemen Donasi</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">Tambah, edit, atau hapus nama donatur.</p>
-              </div>
-              <Button variant="outline" onClick={openNewDonationModal}><Plus className="h-4 w-4 mr-2"/> Donasi Baru</Button>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari nama donatur..."
-                  value={donationSearch}
-                  onChange={e => { setDonationSearch(e.target.value); setDonationPage(1) }}
-                  className="pl-9"
-                />
-              </div>
-              <div className="space-y-3">
-                {currentAdminDonations.map((d, i) => (
-                  <div key={d.id} className="flex items-center justify-between gap-4 border border-border/60 rounded-xl p-4">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-foreground truncate">{(donationPage - 1) * donationPerPage + i + 1}. {d.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{d.method} · Rp {new Intl.NumberFormat("id-ID").format(d.amount)} {d.method === "tunai" ? "💰" : "✅"}</p>
+          <div className="admin-donation-layout">
+            <Card className="admin-donation-card">
+              <CardHeader className="admin-donation-header">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-lg"><Heart className="h-5 w-5" /> Manajemen Donasi</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">Tambah, edit, atau hapus nama donatur.</p>
+                </div>
+                <Button variant="outline" onClick={openNewDonationModal}><Plus className="h-4 w-4 mr-2"/> Donasi Baru</Button>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Cari nama donatur..."
+                    value={donationSearch}
+                    onChange={e => { setDonationSearch(e.target.value); setDonationPage(1) }}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="admin-donation-list">
+                  {currentAdminDonations.map((d, i) => (
+                    <div key={d.id} className="admin-donation-item">
+                      <div className="min-w-0">
+                        <p className="admin-donation-name">{(donationPage - 1) * donationPerPage + i + 1}. {d.name}</p>
+                        <p className="admin-donation-meta">{d.method} · Rp {new Intl.NumberFormat("id-ID").format(d.amount)} {d.method === "tunai" ? "Tunai" : "Transfer"}</p>
+                      </div>
+                      <div className="admin-donation-actions">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setEditingDonationId(d.id)
+                            setDonationForm({ name: d.name, amount: d.amount, method: d.method, round: d.round, isPaid: d.isPaid })
+                            setDonationModalOpen(true)
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" /> Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteDonation(d.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                  ))}
+                </div>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <Button variant="outline" disabled={donationPage === 1} onClick={() => setDonationPage(p => Math.max(1, p - 1))}>Sebelumnya</Button>
+                  <span className="text-sm text-muted-foreground">Halaman {donationPage} / {donationTotalPages}</span>
+                  <Button variant="outline" disabled={donationPage === donationTotalPages} onClick={() => setDonationPage(p => Math.min(donationTotalPages, p + 1))}>Selanjutnya</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+          </div>
+        )}
+
+        {activeTab === "user" && (
+          <Card className="admin-donation-card">
+            <CardHeader className="admin-donation-header">
+              <div>
+                <CardTitle className="text-lg">User Terdaftar</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">CRUD nama, email, password, dan role user.</p>
+              </div>
+              <Button variant="outline" onClick={openNewUserModal}><Plus className="h-4 w-4 mr-2"/> User Baru</Button>
+            </CardHeader>
+            <CardContent>
+              <div className="admin-email-list">
+                {users.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Belum ada user terdaftar.</p>
+                ) : users.map((user, i) => (
+                  <div key={user.id} className="admin-email-item">
+                    <div className="min-w-0">
+                      <p className="admin-email-name">{i + 1}. {user.fullName || "Tanpa Nama"}</p>
+                      <p className="admin-email-address">{user.email} · {user.role}</p>
+                    </div>
+                    <div className="admin-donation-actions">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-primary border-primary/40 hover:bg-primary/10"
                         onClick={() => {
-                          setEditingDonationId(d.id)
-                          setDonationForm({ name: d.name, amount: d.amount, method: d.method, round: d.round, isPaid: d.isPaid })
-                          setDonationModalOpen(true)
+                          setEditingUserId(user.id)
+                          setUserForm({ fullName: user.fullName || "", email: user.email, password: "", role: user.role })
+                          setUserModalOpen(true)
                         }}
                       >
                         <Edit className="h-4 w-4 mr-1" /> Edit
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive border-destructive/40 hover:bg-destructive/10"
-                        onClick={() => deleteDonation(d.id)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => deleteUser(user.id)}>
                         <Trash2 className="h-4 w-4 mr-1" /> Hapus
                       </Button>
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <Button variant="outline" disabled={donationPage === 1} onClick={() => setDonationPage(p => Math.max(1, p - 1))}>Sebelumnya</Button>
-                <span className="text-sm text-muted-foreground">Halaman {donationPage} / {donationTotalPages}</span>
-                <Button variant="outline" disabled={donationPage === donationTotalPages} onClick={() => setDonationPage(p => Math.min(donationTotalPages, p + 1))}>Selanjutnya</Button>
               </div>
             </CardContent>
           </Card>
@@ -856,6 +952,46 @@ export default function AdminPage() {
               <Button variant="outline" onClick={resetDonationForm}>Batal</Button>
               <Button onClick={saveDonation} className="bg-fire-red hover:bg-fire-orange text-white border-0">
                 <Save className="h-4 w-4 mr-2" /> {editingDonationId ? "Update Donasi" : "Simpan Donasi"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={userModalOpen} onOpenChange={(open) => { if (!open) resetUserForm(); else setUserModalOpen(true) }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingUserId ? "Edit User" : "User Baru"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <p className="text-sm text-muted-foreground">Nama</p>
+              <Input placeholder="Nama lengkap" value={userForm.fullName} onChange={e => setUserForm({ ...userForm, fullName: e.target.value })} />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm text-muted-foreground">Email</p>
+              <Input type="email" placeholder="email@example.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm text-muted-foreground">Password {editingUserId ? "baru (opsional)" : ""}</p>
+              <Input type="password" placeholder="Minimal 8 karakter" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm text-muted-foreground">Role</p>
+              <Select value={userForm.role} onValueChange={value => setUserForm({ ...userForm, role: value as "peserta" | "admin" })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="peserta">Peserta</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={resetUserForm}>Batal</Button>
+              <Button onClick={saveUser} className="bg-fire-red hover:bg-fire-orange text-white border-0">
+                <Save className="h-4 w-4 mr-2" /> {editingUserId ? "Update User" : "Simpan User"}
               </Button>
             </div>
           </div>
