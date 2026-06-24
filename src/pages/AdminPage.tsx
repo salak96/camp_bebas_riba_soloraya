@@ -389,7 +389,7 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className="admin-page min-h-svh bg-background">
       {/* Header */}
       <header className="border-b border-border bg-background sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -411,7 +411,7 @@ export default function AdminPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        <div className="admin-stats">
           <Card className="border-border/60">
             <CardContent className="p-4 text-center">
               <Users className="h-5 w-5 mx-auto mb-1 text-primary" />
@@ -450,16 +450,12 @@ export default function AdminPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mb-6 bg-muted p-1 rounded-xl">
+        <div className="admin-tabs">
           {tabs.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                activeTab === tab.key
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`admin-tab-button ${activeTab === tab.key ? "admin-tab-active" : ""}`}
             >
               {tab.icon}
               {tab.label}
