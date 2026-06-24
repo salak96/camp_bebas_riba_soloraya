@@ -43,7 +43,6 @@ const schema = z.object({
   age: z.string().min(1, "Usia wajib diisi"),
   city: z.string().min(2, "Kota asal wajib diisi"),
   shirt_size: z.string().optional(),
-  hijab_size: z.string().optional(),
   full_address: z.string().min(10, "Alamat minimal 10 karakter"),
   notes: z.string().optional(),
 })
@@ -104,7 +103,6 @@ export default function RegistrationFormPage() {
       age: parseInt(values.age, 10) || 0,
       city: values.city,
       shirtSize: values.gender === "ikhwan" ? (values.shirt_size || null) : null,
-      hijabSize: values.gender === "akhwat" ? (values.hijab_size || null) : null,
       fullAddress: values.full_address,
       notes: values.notes || null,
     }
@@ -226,23 +224,6 @@ export default function RegistrationFormPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {["S", "M", "L", "XL", "XXL"].map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Ukuran Khimar (Akhwat) */}
-              {watchedGender === "akhwat" && (
-                <div className="space-y-1.5">
-                  <Label>Ukuran Khimar</Label>
-                  <Select onValueChange={(val) => setValue("hijab_size", val)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih ukuran khimar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["S", "M", "L", "XL"].map((s) => (
                         <SelectItem key={s} value={s}>{s}</SelectItem>
                       ))}
                     </SelectContent>

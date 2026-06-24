@@ -1,2 +1,1 @@
--- AlterTable
-ALTER TABLE `events` ADD COLUMN `region` VARCHAR(255) NULL;
+-- No-op: `region` already exists in initial migration.

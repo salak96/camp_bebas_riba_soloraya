@@ -45,7 +45,6 @@ export type Registration = {
   age: number
   city: string
   shirt_size: string | null
-  hijab_size: string | null
   full_address: string
   notes: string | null
   payment_status: "belum_bayar" | "menunggu_konfirmasi" | "lunas"
@@ -66,7 +65,6 @@ type ApiRegistration = {
   age: number
   city: string
   shirtSize: string | null
-  hijabSize: string | null
   fullAddress: string
   notes: string | null
   paymentStatus: "belum_bayar" | "menunggu_konfirmasi" | "lunas"
@@ -111,7 +109,6 @@ export function toRegistration(r: ApiRegistration | null): Registration | null {
     age: r.age,
     city: r.city,
     shirt_size: r.shirtSize,
-    hijab_size: r.hijabSize,
     full_address: r.fullAddress,
     notes: r.notes,
     payment_status: r.paymentStatus,

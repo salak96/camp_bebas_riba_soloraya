@@ -197,7 +197,6 @@ export default function AdminPage() {
           age: editingReg.age,
           city: editingReg.city,
           shirtSize: editingReg.shirt_size,
-          hijabSize: editingReg.hijab_size,
           fullAddress: editingReg.full_address,
           notes: editingReg.notes,
           paymentStatus: editingReg.payment_status,
@@ -354,7 +353,7 @@ export default function AdminPage() {
   }
 
   function exportCSV() {
-    const headers = ["No", "No. Pendaftaran", "Nama", "Email", "WhatsApp", "Gender", "Usia", "Kota", "Ukuran Kaos", "Ukuran Khimar", "Status Pembayaran", "Tanggal Daftar"]
+    const headers = ["No", "No. Pendaftaran", "Nama", "Email", "WhatsApp", "Gender", "Usia", "Kota", "Ukuran Kaos", "Status Pembayaran", "Tanggal Daftar"]
     const rows = filtered.map((r, i) => [
       i + 1,
       r.registration_number,
@@ -365,7 +364,6 @@ export default function AdminPage() {
       r.age,
       r.city,
       r.shirt_size || "-",
-      r.hijab_size || "-",
       PAYMENT_STATUS_CONFIG[r.payment_status].label,
       new Date(r.created_at).toLocaleDateString("id-ID"),
     ])
@@ -558,22 +556,26 @@ export default function AdminPage() {
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-1">
                                   <Button
+                                    asChild
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => viewProof(reg)}
                                     className="h-7 px-2 text-xs"
                                     title="Lihat detail & bukti"
                                   >
-                                    <Eye className="h-3.5 w-3.5" />
+                                    <Link to={`/admin/bukti/${reg.id}`}>
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </Link>
                                   </Button>
                                   <Button
+                                    asChild
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setEditingReg(reg)}
                                     className="h-7 px-2 text-xs text-primary hover:bg-primary/10"
                                     title="Edit peserta"
                                   >
-                                    <Edit className="h-3.5 w-3.5" />
+                                    <Link to={`/admin/edit/${reg.id}`}>
+                                      <Edit className="h-3.5 w-3.5" />
+                                    </Link>
                                   </Button>
                                   <Button
                                     variant="ghost"
@@ -895,16 +897,10 @@ export default function AdminPage() {
                       <p className="admin-email-address">{user.email} · {user.role}</p>
                     </div>
                     <div className="admin-donation-actions">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditingUserId(user.id)
-                          setUserForm({ fullName: user.fullName || "", email: user.email, password: "", role: user.role })
-                          setUserModalOpen(true)
-                        }}
-                      >
-                        <Edit className="h-4 w-4 mr-1" /> Edit
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/admin/user/edit/${user.id}`}>
+                          <Edit className="h-4 w-4 mr-1" /> Edit
+                        </Link>
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => deleteUser(user.id)}>
                         <Trash2 className="h-4 w-4 mr-1" /> Hapus
@@ -919,7 +915,7 @@ export default function AdminPage() {
       </div>
 
       <Dialog open={donationModalOpen} onOpenChange={(open) => { if (!open) resetDonationForm(); else setDonationModalOpen(true) }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="admin-mobile-dialog max-w-md">
           <DialogHeader>
             <DialogTitle>{editingDonationId ? "Edit Donasi" : "Donasi Baru"}</DialogTitle>
           </DialogHeader>
@@ -955,7 +951,7 @@ export default function AdminPage() {
       </Dialog>
 
       <Dialog open={userModalOpen} onOpenChange={(open) => { if (!open) resetUserForm(); else setUserModalOpen(true) }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="admin-mobile-dialog max-w-md">
           <DialogHeader>
             <DialogTitle>{editingUserId ? "Edit User" : "User Baru"}</DialogTitle>
           </DialogHeader>
@@ -996,7 +992,7 @@ export default function AdminPage() {
 
       {/* Detail Dialog */}
       <Dialog open={!!editingReg} onOpenChange={(open) => { if (!open) setEditingReg(null) }}>
-        <DialogContent className="max-w-lg max-h-[90svh] overflow-y-auto">
+        <DialogContent className="admin-mobile-dialog max-w-lg max-h-[90svh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Peserta</DialogTitle>
           </DialogHeader>
@@ -1039,10 +1035,6 @@ export default function AdminPage() {
                 <Input value={editingReg.shirt_size ?? ""} onChange={e => setEditingReg({ ...editingReg, shirt_size: e.target.value || null })} />
               </div>
               <div className="space-y-1.5">
-                <p className="text-sm text-muted-foreground">Ukuran Khimar</p>
-                <Input value={editingReg.hijab_size ?? ""} onChange={e => setEditingReg({ ...editingReg, hijab_size: e.target.value || null })} />
-              </div>
-              <div className="space-y-1.5">
                 <p className="text-sm text-muted-foreground">Status</p>
                 <Select value={editingReg.payment_status} onValueChange={v => setEditingReg({ ...editingReg, payment_status: v as Registration["payment_status"] })}>
                   <SelectTrigger>
@@ -1072,7 +1064,7 @@ export default function AdminPage() {
         </DialogContent>
       </Dialog>
       <Dialog open={!!selectedReg} onOpenChange={(open) => { if (!open) { setSelectedReg(null); setProofUrl(null) } }}>
-        <DialogContent className="max-w-lg max-h-[90svh] overflow-y-auto">
+        <DialogContent className="admin-mobile-dialog max-w-lg max-h-[90svh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Detail Peserta</DialogTitle>
           </DialogHeader>
@@ -1094,7 +1086,6 @@ export default function AdminPage() {
                   { label: "Usia", value: `${selectedReg.age} tahun` },
                   { label: "Kota", value: selectedReg.city },
                   ...(selectedReg.shirt_size ? [{ label: "Ukuran Kaos", value: selectedReg.shirt_size }] : []),
-                  ...(selectedReg.hijab_size ? [{ label: "Ukuran Khimar", value: selectedReg.hijab_size }] : []),
                   { label: "Tgl Daftar", value: new Date(selectedReg.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex flex-col gap-0.5">

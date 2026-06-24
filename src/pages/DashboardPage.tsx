@@ -47,6 +47,10 @@ const PAYMENT_STATUS_CONFIG = {
   lunas: { label: "Lunas", color: "bg-green-500/10 text-green-600 border-green-500/20", icon: CheckCircle2 },
 }
 
+function buildQrCode(value: string) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(value)}`
+}
+
 export default function DashboardPage() {
   const { user, profile, signOut } = useAuth()
   const [registration, setRegistration] = useState<Registration | null>(null)
@@ -293,6 +297,15 @@ export default function DashboardPage() {
                 <CardTitle className="text-lg">Data Peserta</CardTitle>
               </CardHeader>
               <CardContent>
+                {registration.payment_status === "lunas" && (
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <img
+                      src={buildQrCode(`No. Pendaftaran: ${registration.registration_number}`)}
+                      alt={`QR Code No. Pendaftaran ${registration.registration_number}`}
+                      className="h-56 w-56 rounded-lg border border-border bg-white p-2"
+                    />
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                   {[
                     { label: "Nama Lengkap", value: registration.full_name },
@@ -302,7 +315,6 @@ export default function DashboardPage() {
                     { label: "Usia", value: `${registration.age} tahun` },
                     { label: "Kota Asal", value: registration.city },
                     ...(registration.gender === "ikhwan" && registration.shirt_size ? [{ label: "Ukuran Kaos", value: registration.shirt_size }] : []),
-                    ...(registration.gender === "akhwat" && registration.hijab_size ? [{ label: "Ukuran Khimar", value: registration.hijab_size }] : []),
                   ].map(({ label, value }) => (
                     <div key={label} className="flex flex-col gap-0.5">
                       <span className="text-muted-foreground">{label}</span>
@@ -332,31 +344,31 @@ export default function DashboardPage() {
             </Card>
 
             {/* Detail Event */}
-            <Card className="border-border/60 bg-fire-gradient-subtle text-white">
+            <Card className="border-border/60 bg-fire-gradient-subtle text-foreground">
               <CardHeader>
-                <CardTitle className="text-lg text-white">Detail Event</CardTitle>
+                <CardTitle className="text-lg text-foreground">Detail Event</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <Flame className="h-5 w-5 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-white">{event.name}</p>
-                      <p className="text-sm text-gray-400 italic">"{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"</p>
+                      <p className="font-bold text-foreground">{event.name}</p>
+                      <p className="text-sm text-foreground/80 italic">"{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                  <div className="flex items-center gap-3 text-sm text-foreground/80">
                     <Calendar className="h-4 w-4 text-fire-orange shrink-0" />
                     <span>{formatDateRange(event.startDate, event.endDate)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                  <div className="flex items-center gap-3 text-sm text-foreground/80">
                     <Clock className="h-4 w-4 text-fire-orange shrink-0" />
                     <span>{event.startTime || "08.00 WIB – Selesai"}</span>
                   </div>
-                  <div className="flex items-start gap-3 text-sm text-gray-300">
+                  <div className="flex items-start gap-3 text-sm text-foreground/80">
                     <MapPin className="h-4 w-4 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-white">{event.venue || "Lokasi TBA"}</p>
+                      <p className="font-medium text-foreground">{event.venue || "Lokasi TBA"}</p>
                       {event.address?.split(",").map((line, i) => (
                         <p key={i}>{line.trim()}</p>
                       ))}

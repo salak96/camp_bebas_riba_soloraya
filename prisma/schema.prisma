@@ -73,7 +73,6 @@ model Registration {
   age                Int
   city               String
   shirtSize          String?       @map("shirt_size")
-  hijabSize          String?       @map("hijab_size")
   fullAddress        String        @db.Text @map("full_address")
   notes              String?       @db.Text
   paymentStatus      PaymentStatus @default(belum_bayar) @map("payment_status")

@@ -207,7 +207,7 @@ app.post("/api/registrations", auth, async (req, res) => {
   const event = await activeEvent()
   const exists = await prisma.registration.findUnique({ where: { userId_eventId: { userId: req.user!.id, eventId: event.id } } })
   if (exists) return res.status(409).json({ message: "Anda sudah mendaftar untuk event ini" })
-  const { fullName, email, whatsapp, gender, age, city, shirtSize, hijabSize, fullAddress, notes } = req.body
+  const { fullName, email, whatsapp, gender, age, city, shirtSize, fullAddress, notes } = req.body
   if (!fullName || !email || !whatsapp || !gender || !age || !city || !fullAddress) return res.status(422).json({ message: "Data wajib belum lengkap" })
   const registration = await prisma.registration.create({
     data: {
@@ -221,7 +221,6 @@ app.post("/api/registrations", auth, async (req, res) => {
       age: Number(age),
       city,
       shirtSize: gender === "ikhwan" ? shirtSize || null : null,
-      hijabSize: gender === "akhwat" ? hijabSize || null : null,
       fullAddress,
       notes: notes || null,
     },
@@ -247,6 +246,12 @@ app.get("/api/admin/users", auth, admin, async (_req, res) => {
     select: { id: true, email: true, fullName: true, role: true, createdAt: true },
   })
   res.json({ users })
+})
+
+app.get("/api/admin/users/:id", auth, admin, async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: Number(req.params.id) }, select: { id: true, email: true, fullName: true, role: true, createdAt: true } })
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" })
+  res.json({ user })
 })
 
 app.post("/api/admin/users", auth, admin, async (req, res) => {
@@ -301,6 +306,12 @@ app.get("/api/admin/registrations", auth, admin, async (req, res) => {
   res.json({ registrations })
 })
 
+app.get("/api/admin/registrations/:id", auth, admin, async (req, res) => {
+  const registration = await prisma.registration.findUnique({ where: { id: Number(req.params.id) } })
+  if (!registration) return res.status(404).json({ message: "Peserta tidak ditemukan" })
+  res.json({ registration })
+})
+
 app.patch("/api/admin/registrations/:id/status", auth, admin, async (req, res) => {
   const paymentStatus = req.body.paymentStatus as PaymentStatus
   if (!["belum_bayar", "menunggu_konfirmasi", "lunas"].includes(paymentStatus)) return res.status(422).json({ message: "Status tidak valid" })
@@ -309,7 +320,7 @@ app.patch("/api/admin/registrations/:id/status", auth, admin, async (req, res) =
 })
 
 app.put("/api/admin/registrations/:id", auth, admin, async (req, res) => {
-  const { fullName, email, whatsapp, gender, age, city, shirtSize, hijabSize, fullAddress, notes, paymentStatus } = req.body
+  const { fullName, email, whatsapp, gender, age, city, shirtSize, fullAddress, notes, paymentStatus } = req.body
   const registration = await prisma.registration.update({
     where: { id: Number(req.params.id) },
     data: {
@@ -320,7 +331,6 @@ app.put("/api/admin/registrations/:id", auth, admin, async (req, res) => {
       age: Number(age),
       city,
       shirtSize: gender === "ikhwan" ? shirtSize || null : null,
-      hijabSize: gender === "akhwat" ? hijabSize || null : null,
       fullAddress,
       notes: notes || null,
       paymentStatus,
