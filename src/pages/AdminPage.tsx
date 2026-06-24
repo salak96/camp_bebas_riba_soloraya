@@ -163,11 +163,6 @@ export default function AdminPage() {
     }
   }
 
-  async function viewProof(reg: Registration) {
-    setSelectedReg(reg)
-    setProofUrl(reg.payment_proof_url)
-  }
-
   async function saveEvent() {
     setSavingEvent(true)
     try {
