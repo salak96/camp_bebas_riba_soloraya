@@ -280,12 +280,6 @@ export default function AdminPage() {
     setDonationModalOpen(false)
   }
 
-  function openNewDonationModal() {
-    setDonationForm(emptyDonation)
-    setEditingDonationId(null)
-    setDonationModalOpen(true)
-  }
-
   async function saveDonation() {
     try {
       const path = editingDonationId ? `/admin/donations/${editingDonationId}` : "/admin/donations"
@@ -819,7 +813,7 @@ export default function AdminPage() {
                   <CardTitle className="flex items-center gap-2 text-lg"><Heart className="h-5 w-5" /> Manajemen Donasi</CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">Tambah, edit, atau hapus nama donatur.</p>
                 </div>
-                <Button variant="outline" onClick={openNewDonationModal}><Plus className="h-4 w-4 mr-2"/> Donasi Baru</Button>
+                <Button asChild variant="outline"><Link to="/admin/donasi/new"><Plus className="h-4 w-4 mr-2"/> Donasi Baru</Link></Button>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="relative">
@@ -839,16 +833,10 @@ export default function AdminPage() {
                         <p className="admin-donation-meta">{d.method} · Rp {new Intl.NumberFormat("id-ID").format(d.amount)} {d.method === "tunai" ? "Tunai" : "Transfer"}</p>
                       </div>
                       <div className="admin-donation-actions">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setEditingDonationId(d.id)
-                            setDonationForm({ name: d.name, amount: d.amount, method: d.method, round: d.round, isPaid: d.isPaid })
-                            setDonationModalOpen(true)
-                          }}
-                        >
-                          <Edit className="h-4 w-4 mr-1" /> Edit
+                        <Button asChild variant="outline" size="sm">
+                          <Link to={`/admin/donasi/edit/${d.id}`}>
+                            <Edit className="h-4 w-4 mr-1" /> Edit
+                          </Link>
                         </Button>
                         <Button
                           variant="outline"

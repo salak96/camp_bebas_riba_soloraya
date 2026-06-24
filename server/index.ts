@@ -220,7 +220,7 @@ app.post("/api/registrations", auth, async (req, res) => {
       gender,
       age: Number(age),
       city,
-      shirtSize: gender === "ikhwan" ? shirtSize || null : null,
+      shirtSize: shirtSize || null,
       fullAddress,
       notes: notes || null,
     },
@@ -330,7 +330,7 @@ app.put("/api/admin/registrations/:id", auth, admin, async (req, res) => {
       gender,
       age: Number(age),
       city,
-      shirtSize: gender === "ikhwan" ? shirtSize || null : null,
+      shirtSize: shirtSize || null,
       fullAddress,
       notes: notes || null,
       paymentStatus,
@@ -391,6 +391,12 @@ app.get("/api/donations", async (_req, res) => {
 app.get("/api/admin/donations", auth, admin, async (_req, res) => {
   const donations = await prisma.$queryRawUnsafe<any[]>("SELECT id, name, amount, method, round, is_paid AS isPaid, created_at AS createdAt, updated_at AS updatedAt FROM donations ORDER BY id ASC")
   res.json({ donations })
+})
+
+app.get("/api/admin/donations/:id", auth, admin, async (req, res) => {
+  const rows = await prisma.$queryRawUnsafe<any[]>("SELECT id, name, amount, method, round, is_paid AS isPaid, created_at AS createdAt, updated_at AS updatedAt FROM donations WHERE id = ? LIMIT 1", Number(req.params.id))
+  if (!rows[0]) return res.status(404).json({ message: "Donasi tidak ditemukan" })
+  res.json({ donation: rows[0] })
 })
 
 app.post("/api/admin/donations", auth, admin, async (req, res) => {

@@ -93,7 +93,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-svh bg-fire-gradient-subtle flex items-center justify-center px-4">
+    <div className="min-h-svh bg-black sm:bg-fire-gradient-subtle flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-orange-300 hover:text-orange-200 transition-colors mb-4">

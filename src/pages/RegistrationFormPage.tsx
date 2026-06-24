@@ -42,7 +42,7 @@ const schema = z.object({
   gender: z.enum(["ikhwan", "akhwat"] as const),
   age: z.string().min(1, "Usia wajib diisi"),
   city: z.string().min(2, "Kota asal wajib diisi"),
-  shirt_size: z.string().optional(),
+  shirt_size: z.enum(["S", "M", "L", "XL", "XXL"] as const, { message: "Ukuran kaos wajib dipilih" }),
   full_address: z.string().min(10, "Alamat minimal 10 karakter"),
   notes: z.string().optional(),
 })
@@ -68,15 +68,13 @@ export default function RegistrationFormPage() {
     loadEvent()
   }, [])
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       email: user?.email ?? "",
       full_name: profile?.full_name ?? "",
     }
   })
-
-  const watchedGender = watch("gender")
 
   useEffect(() => {
     if (!user) return
@@ -102,7 +100,7 @@ export default function RegistrationFormPage() {
       gender: values.gender,
       age: parseInt(values.age, 10) || 0,
       city: values.city,
-      shirtSize: values.gender === "ikhwan" ? (values.shirt_size || null) : null,
+      shirtSize: values.shirt_size,
       fullAddress: values.full_address,
       notes: values.notes || null,
     }
@@ -214,22 +212,20 @@ export default function RegistrationFormPage() {
                 {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
               </div>
 
-              {/* Ukuran Kaos (Ikhwan) */}
-              {watchedGender === "ikhwan" && (
-                <div className="space-y-1.5">
-                  <Label>Ukuran Kaos</Label>
-                  <Select onValueChange={(val) => setValue("shirt_size", val)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih ukuran kaos" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["S", "M", "L", "XL", "XXL"].map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="space-y-1.5">
+                <Label>Ukuran Kaos *</Label>
+                <Select onValueChange={(val) => setValue("shirt_size", val as FormValues["shirt_size"], { shouldValidate: true })}>
+                  <SelectTrigger aria-invalid={!!errors.shirt_size}>
+                    <SelectValue placeholder="Pilih ukuran kaos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["S", "M", "L", "XL", "XXL"].map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.shirt_size && <p className="text-xs text-destructive">{errors.shirt_size.message}</p>}
+              </div>
 
               {/* Alamat */}
               <div className="space-y-1.5">

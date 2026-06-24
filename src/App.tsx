@@ -19,6 +19,7 @@ import AdminPage from "@/pages/AdminPage"
 import AdminEditRegistrationPage from "@/pages/AdminEditRegistrationPage"
 import AdminRegistrationProofPage from "@/pages/AdminRegistrationProofPage"
 import AdminEditUserPage from "@/pages/AdminEditUserPage"
+import AdminDonationFormPage from "@/pages/AdminDonationFormPage"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth()
@@ -64,6 +65,8 @@ export default function App() {
         <Route path="/admin/edit/:id" element={<AdminRoute><AdminEditRegistrationPage /></AdminRoute>} />
         <Route path="/admin/bukti/:id" element={<AdminRoute><AdminRegistrationProofPage /></AdminRoute>} />
         <Route path="/admin/user/edit/:id" element={<AdminRoute><AdminEditUserPage /></AdminRoute>} />
+        <Route path="/admin/donasi/new" element={<AdminRoute><AdminDonationFormPage /></AdminRoute>} />
+        <Route path="/admin/donasi/edit/:id" element={<AdminRoute><AdminDonationFormPage /></AdminRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SiteFooter />

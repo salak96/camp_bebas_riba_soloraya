@@ -86,6 +86,7 @@ export default function AdminRegistrationProofPage() {
                 { label: "Gender", value: registration.gender === "ikhwan" ? "Ikhwan" : "Akhwat" },
                 { label: "Usia", value: `${registration.age} tahun` },
                 { label: "Kota", value: registration.city },
+                { label: "Ukuran Kaos", value: registration.shirt_size || "-" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col gap-0.5">
                   <span className="text-muted-foreground">{label}</span>

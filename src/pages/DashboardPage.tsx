@@ -314,7 +314,7 @@ export default function DashboardPage() {
                     { label: "Jenis Kelamin", value: registration.gender === "ikhwan" ? "Ikhwan" : "Akhwat" },
                     { label: "Usia", value: `${registration.age} tahun` },
                     { label: "Kota Asal", value: registration.city },
-                    ...(registration.gender === "ikhwan" && registration.shirt_size ? [{ label: "Ukuran Kaos", value: registration.shirt_size }] : []),
+                    ...(registration.shirt_size ? [{ label: "Ukuran Kaos", value: registration.shirt_size }] : []),
                   ].map(({ label, value }) => (
                     <div key={label} className="flex flex-col gap-0.5">
                       <span className="text-muted-foreground">{label}</span>
@@ -344,31 +344,31 @@ export default function DashboardPage() {
             </Card>
 
             {/* Detail Event */}
-            <Card className="border-border/60 bg-fire-gradient-subtle text-foreground">
+            <Card className="border-border/60 bg-fire-gradient-subtle text-foreground sm:text-white">
               <CardHeader>
-                <CardTitle className="text-lg text-foreground">Detail Event</CardTitle>
+                <CardTitle className="text-lg text-foreground sm:text-white">Detail Event</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <Flame className="h-5 w-5 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-foreground">{event.name}</p>
-                      <p className="text-sm text-foreground/80 italic">"{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"</p>
+                      <p className="font-bold text-foreground sm:text-white">{event.name}</p>
+                      <p className="text-sm text-foreground/80 sm:text-gray-400 italic">"{event.theme || 'Lepaskan Beban Hidup dari Jerat Hutang'}"</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <div className="flex items-center gap-3 text-sm text-foreground/80 sm:text-gray-300">
                     <Calendar className="h-4 w-4 text-fire-orange shrink-0" />
                     <span>{formatDateRange(event.startDate, event.endDate)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-foreground/80">
+                  <div className="flex items-center gap-3 text-sm text-foreground/80 sm:text-gray-300">
                     <Clock className="h-4 w-4 text-fire-orange shrink-0" />
                     <span>{event.startTime || "08.00 WIB – Selesai"}</span>
                   </div>
-                  <div className="flex items-start gap-3 text-sm text-foreground/80">
+                  <div className="flex items-start gap-3 text-sm text-foreground/80 sm:text-gray-300">
                     <MapPin className="h-4 w-4 text-fire-orange shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-foreground">{event.venue || "Lokasi TBA"}</p>
+                      <p className="font-medium text-foreground sm:text-white">{event.venue || "Lokasi TBA"}</p>
                       {event.address?.split(",").map((line, i) => (
                         <p key={i}>{line.trim()}</p>
                       ))}
@@ -379,10 +379,10 @@ export default function DashboardPage() {
             </Card>
 
             {/* WhatsApp contact */}
-            <Card className="border-border/60">
+            <Card className="border-border/60 sm:bg-foreground">
               <CardContent className="p-5">
-                <p className="text-sm font-semibold text-foreground mb-2">Butuh Bantuan?</p>
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm font-semibold text-foreground sm:text-white mb-2">Butuh Bantuan?</p>
+                <p className="text-sm text-muted-foreground sm:text-gray-300 mb-3">
                   Hubungi panitia via WhatsApp untuk konfirmasi pembayaran atau pertanyaan lainnya.
                 </p>
                 <Button
