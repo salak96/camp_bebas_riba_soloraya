@@ -124,9 +124,40 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const authToken = token()
   if (authToken) headers.set("Authorization", `Bearer ${authToken}`)
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers })
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers })
+  } catch {
+    throw new Error("Server tidak dapat dijangkau. Periksa koneksi internet Anda atau coba beberapa saat lagi.")
+  }
+
+  const contentType = res.headers.get("content-type") || ""
+
+  // Non-JSON response (e.g. Nginx HTML error page) → beri pesan yang bisa dimengerti
+  if (!contentType.includes("application/json")) {
+    if (res.status === 502) {
+      throw new Error("Server sedang sibuk. Silakan coba lagi dalam beberapa saat.")
+    }
+    if (res.status === 503 || res.status === 504) {
+      throw new Error("Server sedang dalam pemeliharaan. Silakan coba lagi nanti.")
+    }
+    if (res.status >= 500) {
+      throw new Error(`Server mengalami kendala (HTTP ${res.status}). Silakan coba lagi nanti.`)
+    }
+    if (res.status === 404) {
+      throw new Error("Endpoint tidak ditemukan. Hubungi administrator jika ini berlanjut.")
+    }
+    throw new Error("Respons server tidak valid. Kemungkinan server sedang down.")
+  }
+
   const text = await res.text()
-  const data = text ? JSON.parse(text) : null
+  let data: any = null
+  try {
+    data = text ? JSON.parse(text) : null
+  } catch {
+    throw new Error("Respons server tidak valid. Silakan coba lagi atau hubungi administrator.")
+  }
+
   if (!res.ok) throw new Error(data?.message || "Request gagal")
   return data as T
 }
