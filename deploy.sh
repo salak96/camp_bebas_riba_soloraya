@@ -20,6 +20,13 @@ echo ""
 read -s -p "Brevo API Key: " BREVO_API_KEY
 echo ""
 read -p "SMTP From email: " SMTP_FROM_EMAIL
+read -p "R2 Endpoint (https://<accountid>.r2.cloudflarestorage.com): " R2_ENDPOINT
+read -p "R2 Access Key ID: " R2_ACCESS_KEY_ID
+read -s -p "R2 Secret Access Key: " R2_SECRET_ACCESS_KEY
+echo ""
+read -p "R2 Bucket name [campbebasriba-uploads]: " R2_BUCKET
+R2_BUCKET=${R2_BUCKET:-campbebasriba-uploads}
+read -p "R2 Public URL (https://pub-<hash>.r2.dev): " R2_PUBLIC_URL
 
 # Install dependencies
 echo ""
@@ -58,6 +65,11 @@ SMTP_USER="${SMTP_USER}"
 SMTP_PASS="${SMTP_PASS}"
 SMTP_FROM="Camp Bebas Riba <${SMTP_FROM_EMAIL}>"
 BREVO_API_KEY="${BREVO_API_KEY}"
+R2_ENDPOINT="${R2_ENDPOINT}"
+R2_ACCESS_KEY_ID="${R2_ACCESS_KEY_ID}"
+R2_SECRET_ACCESS_KEY="${R2_SECRET_ACCESS_KEY}"
+R2_BUCKET="${R2_BUCKET}"
+R2_PUBLIC_URL="${R2_PUBLIC_URL}"
 EOF
 
 # Install project dependencies

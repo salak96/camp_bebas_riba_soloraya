@@ -15,6 +15,8 @@
     "seed:admin": "tsx server/seed-admin.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1081.0",
+    "@aws-sdk/lib-storage": "^3.1081.0",
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.2.1",
     "bcryptjs": "^3.0.3",

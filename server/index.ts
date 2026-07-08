@@ -4,13 +4,11 @@ import dotenv from "dotenv"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import multer from "multer"
-import path from "node:path"
-import fs from "node:fs"
 import crypto from "node:crypto"
-import { fileURLToPath } from "node:url"
 import nodemailer from "nodemailer"
 import { OAuth2Client } from "google-auth-library"
 import { PrismaClient, PaymentStatus, UserRole } from "@prisma/client"
+import { uploadToR2 } from "./lib/r2.js"
 
 dotenv.config()
 
@@ -20,22 +18,13 @@ const port = Number(process.env.PORT || 4000)
 const jwtSecret = process.env.JWT_SECRET || "dev-secret-change-me"
 const appUrl = process.env.APP_URL || "http://localhost:5173"
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const uploadDir = path.join(__dirname, "uploads")
-
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
 
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use("/uploads", express.static(uploadDir))
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadDir,
-    filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "")}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ok = ["image/jpeg", "image/png", "application/pdf"].includes(file.mimetype)
@@ -233,9 +222,11 @@ app.post("/api/my/registration/proof", auth, upload.single("proof"), async (req,
   const registration = await prisma.registration.findUnique({ where: { userId_eventId: { userId: req.user!.id, eventId: event.id } } })
   if (!registration) return res.status(404).json({ message: "Pendaftaran tidak ditemukan" })
   if (!req.file) return res.status(422).json({ message: "File wajib diupload" })
+  const key = `proofs/${req.user!.id}-${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "")}`
+  const { url } = await uploadToR2(key, req.file.buffer, req.file.mimetype)
   const updated = await prisma.registration.update({
     where: { id: registration.id },
-    data: { proofFile: req.file.filename, paymentStatus: "menunggu_konfirmasi" },
+    data: { proofFile: url, paymentStatus: "menunggu_konfirmasi" },
   })
   res.json({ registration: updated })
 })
@@ -424,8 +415,9 @@ app.get("/api/articles", async (_req, res) => {
 app.post("/api/admin/uploads/image", auth, admin, upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(422).json({ message: "File gambar wajib diupload" })
   if (!["image/jpeg", "image/png"].includes(req.file.mimetype)) return res.status(422).json({ message: "Format gambar harus JPG atau PNG" })
-  const baseUrl = `${req.protocol}://${req.get("host")}`
-  res.json({ url: `${baseUrl}/uploads/${req.file.filename}` })
+  const key = `articles/${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "")}`
+  const { url } = await uploadToR2(key, req.file.buffer, req.file.mimetype)
+  res.json({ url })
 })
 
 app.get("/api/admin/articles", auth, admin, async (_req, res) => {

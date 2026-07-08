@@ -112,7 +112,7 @@ export function toRegistration(r: ApiRegistration | null): Registration | null {
     full_address: r.fullAddress,
     notes: r.notes,
     payment_status: r.paymentStatus,
-    payment_proof_url: r.proofFile ? `${API_URL.replace("/api", "")}/uploads/${r.proofFile}` : null,
+    payment_proof_url: r.proofFile,
     created_at: r.createdAt,
     updated_at: r.updatedAt,
   }
