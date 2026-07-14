@@ -449,6 +449,15 @@ app.delete("/api/admin/articles/:id", auth, admin, async (req, res) => {
 })
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const code = (err as { code?: string })?.code
+  if (err?.name === "MulterError" || err instanceof multer.MulterError) {
+    if (code === "LIMIT_FILE_SIZE") return res.status(413).json({ message: "Ukuran file maksimal 2MB." })
+    if (code === "LIMIT_UNEXPECTED_FILE") return res.status(400).json({ message: "Field file tidak sesuai." })
+    return res.status(400).json({ message: "Gagal memproses file yang diupload." })
+  }
+  if (err?.message === "Format file harus JPG, PNG, atau PDF") {
+    return res.status(415).json({ message: err.message })
+  }
   console.error(err)
   res.status(500).json({ message: "Terjadi kesalahan server. Silakan coba lagi nanti." })
 })
